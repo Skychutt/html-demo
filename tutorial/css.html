@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSS 基础教程 - 前端基础教程</title>
+  <meta name="description" content="从零开始学习 CSS：选择器、颜色字体、盒模型、Flexbox 布局、定位与响应式设计。">
+  <link rel="stylesheet" href="../css/tutorial.css">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-logo">📚 前端基础教程</a>
+      <button class="menu-toggle" aria-label="打开菜单">☰</button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="html.html">HTML</a></li>
+          <li><a href="css.html" class="active">CSS</a></li>
+          <li><a href="javascript.html">JavaScript</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="sidebar-title">本章目录</p>
+      <ul class="toc">
+        <li><a href="#intro">什么是 CSS</a></li>
+        <li><a href="#how-to-use">如何引入 CSS</a></li>
+        <li><a href="#selectors">选择器</a></li>
+        <li><a href="#colors-fonts">颜色与字体</a></li>
+        <li><a href="#box-model">盒模型</a></li>
+        <li><a href="#display">显示与定位</a></li>
+        <li><a href="#flexbox">Flexbox 布局</a></li>
+        <li><a href="#responsive">响应式设计</a></li>
+        <li><a href="#cheatsheet">常用属性速查</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">CSS 基础教程</h1>
+      <p class="page-desc">CSS（Cascading Style Sheets，层叠样式表）负责网页的<strong>外观</strong>：颜色、字体、间距、布局。HTML 搭骨架，CSS 做装修。</p>
+
+      <!-- 第1章 -->
+      <section id="intro">
+        <h2>1. 什么是 CSS？</h2>
+        <p>CSS 的基本工作方式是：<strong>选择 HTML 元素 → 设置样式属性</strong>。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">h1</span> {
+  <span class="token-property">color</span>: <span class="token-string">blue</span>;        <span class="token-comment">/* 文字颜色 */</span>
+  <span class="token-property">font-size</span>: <span class="token-number">32px</span>;     <span class="token-comment">/* 字体大小 */</span>
+  <span class="token-property">text-align</span>: <span class="token-string">center</span>;  <span class="token-comment">/* 文字居中 */</span>
+}</code></pre>
+        </div>
+
+        <h3>CSS 语法结构</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">选择器</span> {
+  <span class="token-property">属性名</span>: <span class="token-string">属性值</span>;
+  <span class="token-property">属性名</span>: <span class="token-string">属性值</span>;
+}</code></pre>
+        </div>
+        <ul>
+          <li><strong>选择器</strong>：指定要样式化的 HTML 元素</li>
+          <li><strong>声明块</strong>：花括号 <code>{ }</code> 内的样式规则</li>
+          <li><strong>声明</strong>：一条 <code>属性: 值;</code> 规则，必须以分号结尾</li>
+          <li><strong>注释</strong>：<code>/* 注释内容 */</code></li>
+        </ul>
+
+        <h3>层叠（Cascade）的含义</h3>
+        <p>当多个规则作用于同一元素时，浏览器按以下优先级决定最终样式：</p>
+        <ol>
+          <li><strong>!important</strong> 声明（尽量避免使用）</li>
+          <li><strong>特异性</strong>（id &gt; class &gt; 标签）</li>
+          <li><strong>来源顺序</strong>：后写的规则覆盖先写的</li>
+        </ol>
+      </section>
+
+      <!-- 第2章 -->
+      <section id="how-to-use">
+        <h2>2. 如何引入 CSS</h2>
+        <p>有三种方式将 CSS 应用到 HTML，优先级从低到高：外部样式表 &lt; 内部样式 &lt; 内联样式。</p>
+
+        <h3>方式一：外部样式表（推荐）</h3>
+        <p>CSS 写在单独的 <code>.css</code> 文件中，通过 <code>&lt;link&gt;</code> 引入，可被多个页面复用。</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;head&gt;</span>
+  <span class="token-tag">&lt;link</span> <span class="token-attr">rel</span>=<span class="token-string">"stylesheet"</span> <span class="token-attr">href</span>=<span class="token-string">"css/style.css"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;/head&gt;</span></code></pre>
+        </div>
+
+        <h3>方式二：内部样式表</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;head&gt;</span>
+  <span class="token-tag">&lt;style&gt;</span>
+    h1 { color: red; }
+  <span class="token-tag">&lt;/style&gt;</span>
+<span class="token-tag">&lt;/head&gt;</span></code></pre>
+        </div>
+
+        <h3>方式三：内联样式（不推荐）</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;p</span> <span class="token-attr">style</span>=<span class="token-string">"color: green; font-size: 18px;"</span><span class="token-tag">&gt;</span>绿色文字<span class="token-tag">&lt;/p&gt;</span></code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <strong>💡 最佳实践</strong>
+          日常开发请使用<strong>外部样式表</strong>。内联样式难以维护，只在极少数动态场景使用。
+        </div>
+      </section>
+
+      <!-- 第3章 -->
+      <section id="selectors">
+        <h2>3. 选择器</h2>
+        <p>选择器决定 CSS 规则应用到哪些元素上，是 CSS 最核心的概念之一。</p>
+
+        <h3>基础选择器</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>选择器</th><th>示例</th><th>匹配</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>元素选择器</td><td><code>p { }</code></td><td>所有 &lt;p&gt; 元素</td></tr>
+            <tr><td>类选择器</td><td><code>.btn { }</code></td><td>class="btn" 的元素</td></tr>
+            <tr><td>ID 选择器</td><td><code>#header { }</code></td><td>id="header" 的元素</td></tr>
+            <tr><td>通配符</td><td><code>* { }</code></td><td>所有元素</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">/* 元素选择器 */</span>
+<span class="token-selector">p</span> { <span class="token-property">line-height</span>: <span class="token-number">1.6</span>; }
+
+<span class="token-comment">/* 类选择器 — 最常用 */</span>
+<span class="token-selector">.highlight</span> { <span class="token-property">background</span>: <span class="token-string">yellow</span>; }
+<span class="token-selector">.btn.primary</span> { <span class="token-property">background</span>: <span class="token-string">blue</span>; }  <span class="token-comment">/* 同时有 btn 和 primary 类 */</span>
+
+<span class="token-comment">/* ID 选择器 — 谨慎使用 */</span>
+<span class="token-selector">#logo</span> { <span class="token-property">width</span>: <span class="token-number">120px</span>; }</code></pre>
+        </div>
+
+        <h3>组合选择器</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">/* 后代选择器：nav 内部的所有 a */</span>
+<span class="token-selector">nav a</span> { <span class="token-property">color</span>: <span class="token-string">#333</span>; }
+
+<span class="token-comment">/* 子选择器：ul 的直接子 li */</span>
+<span class="token-selector">ul &gt; li</span> { <span class="token-property">list-style</span>: <span class="token-string">none</span>; }
+
+<span class="token-comment">/* 相邻兄弟：h2 后面紧挨的 p */</span>
+<span class="token-selector">h2 + p</span> { <span class="token-property">font-weight</span>: <span class="token-string">bold</span>; }
+
+<span class="token-comment">/* 分组选择器：h1 和 h2 共用样式 */</span>
+<span class="token-selector">h1, h2</span> { <span class="token-property">font-family</span>: <span class="token-string">sans-serif</span>; }</code></pre>
+        </div>
+
+        <h3>伪类选择器</h3>
+        <p>伪类选择特定<strong>状态</strong>的元素：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">a:hover</span> { <span class="token-property">color</span>: <span class="token-string">red</span>; }           <span class="token-comment">/* 鼠标悬停 */</span>
+<span class="token-selector">a:visited</span> { <span class="token-property">color</span>: <span class="token-string">purple</span>; }      <span class="token-comment">/* 已访问的链接 */</span>
+<span class="token-selector">input:focus</span> { <span class="token-property">border-color</span>: <span class="token-string">blue</span>; } <span class="token-comment">/* 获得焦点 */</span>
+<span class="token-selector">li:first-child</span> { <span class="token-property">font-weight</span>: <span class="token-string">bold</span>; } <span class="token-comment">/* 第一个子元素 */</span>
+<span class="token-selector">li:nth-child(2)</span> { <span class="token-property">color</span>: <span class="token-string">green</span>; }  <span class="token-comment">/* 第 2 个子元素 */</span>
+<span class="token-selector">p:not(.intro)</span> { <span class="token-property">opacity</span>: <span class="token-number">0.8</span>; }    <span class="token-comment">/* 不含 intro 类的 p */</span></code></pre>
+        </div>
+
+        <h3>伪元素选择器</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">p::before</span> { <span class="token-property">content</span>: <span class="token-string">"📌 "</span>; }       <span class="token-comment">/* 元素前插入内容 */</span>
+<span class="token-selector">p::after</span> { <span class="token-property">content</span>: <span class="token-string">" ✓"</span>; }        <span class="token-comment">/* 元素后插入内容 */</span>
+<span class="token-selector">::selection</span> { <span class="token-property">background</span>: <span class="token-string">#ff0</span>; }  <span class="token-comment">/* 选中文字的背景 */</span>
+<span class="token-selector">input::placeholder</span> { <span class="token-property">color</span>: <span class="token-string">#999</span>; } <span class="token-comment">/* 占位符文字 */</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第4章 -->
+      <section id="colors-fonts">
+        <h2>4. 颜色与字体</h2>
+
+        <h3>颜色表示方式</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">.demo</span> {
+  <span class="token-property">color</span>: <span class="token-string">red</span>;                    <span class="token-comment">/* 颜色名 */</span>
+  <span class="token-property">color</span>: <span class="token-string">#ff0000</span>;                <span class="token-comment">/* 十六进制 */</span>
+  <span class="token-property">color</span>: <span class="token-string">#f00</span>;                   <span class="token-comment">/* 十六进制简写 */</span>
+  <span class="token-property">color</span>: <span class="token-string">rgb(255, 0, 0)</span>;           <span class="token-comment">/* RGB */</span>
+  <span class="token-property">color</span>: <span class="token-string">rgba(255, 0, 0, 0.5)</span>;     <span class="token-comment">/* RGB + 透明度 0~1 */</span>
+  <span class="token-property">color</span>: <span class="token-string">hsl(0, 100%, 50%)</span>;        <span class="token-comment">/* 色相/饱和度/亮度 */</span>
+  <span class="token-property">background-color</span>: <span class="token-string">#f0f0f0</span>;     <span class="token-comment">/* 背景色 */</span>
+}</code></pre>
+        </div>
+
+        <h3>字体属性</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">body</span> {
+  <span class="token-property">font-family</span>: <span class="token-string">"Microsoft YaHei"</span>, <span class="token-string">sans-serif</span>;  <span class="token-comment">/* 字体族，从左到右回退 */</span>
+  <span class="token-property">font-size</span>: <span class="token-number">16px</span>;          <span class="token-comment">/* 字号 */</span>
+  <span class="token-property">font-weight</span>: <span class="token-number">400</span>;         <span class="token-comment">/* 粗细：100~900，normal=400, bold=700 */</span>
+  <span class="token-property">font-style</span>: <span class="token-string">normal</span>;       <span class="token-comment">/* normal | italic 斜体 */</span>
+  <span class="token-property">line-height</span>: <span class="token-number">1.6</span>;         <span class="token-comment">/* 行高，无单位时是字号的倍数 */</span>
+  <span class="token-property">text-align</span>: <span class="token-string">left</span>;         <span class="token-comment">/* left | center | right | justify */</span>
+  <span class="token-property">text-decoration</span>: <span class="token-string">none</span>;    <span class="token-comment">/* none | underline | line-through */</span>
+  <span class="token-property">text-transform</span>: <span class="token-string">uppercase</span>; <span class="token-comment">/* 大小写转换 */</span>
+  <span class="token-property">letter-spacing</span>: <span class="token-number">1px</span>;      <span class="token-comment">/* 字间距 */</span>
+}</code></pre>
+        </div>
+
+        <h3>字体大小单位</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>单位</th><th>说明</th><th>示例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>px</code></td><td>像素，绝对单位</td><td><code>font-size: 16px;</code></td></tr>
+            <tr><td><code>em</code></td><td>相对于父元素字号</td><td><code>font-size: 1.5em;</code></td></tr>
+            <tr><td><code>rem</code></td><td>相对于根元素（html）字号</td><td><code>font-size: 1.25rem;</code></td></tr>
+            <tr><td><code>%</code></td><td>百分比</td><td><code>font-size: 120%;</code></td></tr>
+            <tr><td><code>vw/vh</code></td><td>视口宽度/高度的百分比</td><td><code>width: 50vw;</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <strong>💡 推荐</strong>
+          现代开发中，根元素设 <code>font-size: 16px;</code>，其余用 <code>rem</code> 做字号，便于统一缩放。
+        </div>
+      </section>
+
+      <!-- 第5章 -->
+      <section id="box-model">
+        <h2>5. 盒模型（Box Model）</h2>
+        <p>CSS 中，每个元素都被看作一个<strong>矩形盒子</strong>，由内容、内边距、边框、外边距四层组成。</p>
+
+        <div style="background:#f1f5f9;padding:1.5rem;border-radius:8px;text-align:center;margin:1.25rem 0;font-family:monospace;font-size:0.875rem;">
+          <div style="background:#fef3c7;padding:8px;border:2px dashed #d97706;display:inline-block;">
+            margin（外边距）
+            <div style="background:#dbeafe;padding:8px;border:2px solid #2563eb;margin:4px;">
+              border（边框）
+              <div style="background:#d1fae5;padding:8px;border:2px dashed #059669;margin:4px;">
+                padding（内边距）
+                <div style="background:#fff;padding:12px 24px;border:1px solid #ccc;">content（内容）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">.box</span> {
+  <span class="token-property">width</span>: <span class="token-number">300px</span>;              <span class="token-comment">/* 宽度 */</span>
+  <span class="token-property">height</span>: <span class="token-number">200px</span>;             <span class="token-comment">/* 高度 */</span>
+  <span class="token-property">padding</span>: <span class="token-number">20px</span>;              <span class="token-comment">/* 内边距：内容与边框的距离 */</span>
+  <span class="token-property">padding</span>: <span class="token-number">10px</span> <span class="token-number">20px</span>;         <span class="token-comment">/* 上下10 左右20 */</span>
+  <span class="token-property">padding</span>: <span class="token-number">10px</span> <span class="token-number">20px</span> <span class="token-number">30px</span> <span class="token-number">40px</span>; <span class="token-comment">/* 上 右 下 左（顺时针） */</span>
+  <span class="token-property">border</span>: <span class="token-number">2px</span> <span class="token-string">solid</span> <span class="token-string">#ccc</span>;     <span class="token-comment">/* 边框：粗细 样式 颜色 */</span>
+  <span class="token-property">margin</span>: <span class="token-number">16px</span>;               <span class="token-comment">/* 外边距：元素与其他元素的距离 */</span>
+  <span class="token-property">margin</span>: <span class="token-number">0</span> <span class="token-string">auto</span>;           <span class="token-comment">/* 水平居中块级元素 */</span>
+  <span class="token-property">box-sizing</span>: <span class="token-string">border-box</span>;  <span class="token-comment">/* 宽度包含 padding 和 border */</span>
+}</code></pre>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>⚠️ 重要</strong>
+          始终设置 <code>box-sizing: border-box;</code>（可放在全局 reset 中）。否则 <code>width: 300px</code> 加上 padding 和 border 后实际宽度会超过 300px。
+        </div>
+
+        <h3>边框样式</h3>
+        <p>边框样式值：<code>solid</code>（实线）、<code>dashed</code>（虚线）、<code>dotted</code>（点线）、<code>none</code>（无）</p>
+
+        <h3>背景</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">.hero</span> {
+  <span class="token-property">background-color</span>: <span class="token-string">#f0f0f0</span>;
+  <span class="token-property">background-image</span>: <span class="token-string">url("bg.jpg")</span>;
+  <span class="token-property">background-size</span>: <span class="token-string">cover</span>;       <span class="token-comment">/* 覆盖整个区域 */</span>
+  <span class="token-property">background-position</span>: <span class="token-string">center</span>;
+  <span class="token-property">background-repeat</span>: <span class="token-string">no-repeat</span>;
+  <span class="token-property">border-radius</span>: <span class="token-number">8px</span>;         <span class="token-comment">/* 圆角 */</span>
+  <span class="token-property">box-shadow</span>: <span class="token-number">0</span> <span class="token-number">2px</span> <span class="token-number">8px</span> <span class="token-string">rgba(0,0,0,0.1)</span>; <span class="token-comment">/* 阴影 */</span>
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- 第6章 -->
+      <section id="display">
+        <h2>6. 显示类型与定位</h2>
+
+        <h3>display 属性</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>值</th><th>行为</th><th>典型元素</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>block</code></td><td>独占一行，可设宽高</td><td>div, p, h1, section</td></tr>
+            <tr><td><code>inline</code></td><td>行内排列，不可设宽高</td><td>span, a, strong</td></tr>
+            <tr><td><code>inline-block</code></td><td>行内排列，但可设宽高</td><td>button, img</td></tr>
+            <tr><td><code>none</code></td><td>完全隐藏，不占空间</td><td>—</td></tr>
+            <tr><td><code>flex</code></td><td>弹性布局容器</td><td>—</td></tr>
+            <tr><td><code>grid</code></td><td>网格布局容器</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h3>position 定位</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">/* static — 默认值，正常文档流 */</span>
+<span class="token-selector">.normal</span> { <span class="token-property">position</span>: <span class="token-string">static</span>; }
+
+<span class="token-comment">/* relative — 相对自身原位置偏移 */</span>
+<span class="token-selector">.offset</span> {
+  <span class="token-property">position</span>: <span class="token-string">relative</span>;
+  <span class="token-property">top</span>: <span class="token-number">10px</span>;
+  <span class="token-property">left</span>: <span class="token-number">20px</span>;
+}
+
+<span class="token-comment">/* absolute — 相对最近的非 static 祖先定位 */</span>
+<span class="token-selector">.parent</span> { <span class="token-property">position</span>: <span class="token-string">relative</span>; }
+<span class="token-selector">.badge</span> {
+  <span class="token-property">position</span>: <span class="token-string">absolute</span>;
+  <span class="token-property">top</span>: <span class="token-number">0</span>;
+  <span class="token-property">right</span>: <span class="token-number">0</span>;
+}
+
+<span class="token-comment">/* fixed — 相对浏览器窗口固定 */</span>
+<span class="token-selector">.navbar</span> {
+  <span class="token-property">position</span>: <span class="token-string">fixed</span>;
+  <span class="token-property">top</span>: <span class="token-number">0</span>;
+  <span class="token-property">width</span>: <span class="token-number">100%</span>;
+}
+
+<span class="token-comment">/* sticky — 滚动到阈值时"粘"在顶部 */</span>
+<span class="token-selector">.sticky-header</span> {
+  <span class="token-property">position</span>: <span class="token-string">sticky</span>;
+  <span class="token-property">top</span>: <span class="token-number">0</span>;
+}</code></pre>
+        </div>
+
+        <h3>z-index 层叠顺序</h3>
+        <p>只对 <code>position</code> 非 static 的元素生效，数值越大越靠前。</p>
+      </section>
+
+      <!-- 第7章 -->
+      <section id="flexbox">
+        <h2>7. Flexbox 弹性布局</h2>
+        <p>Flexbox 是现代 CSS 布局的核心工具，特别适合导航栏、卡片排列、垂直居中等场景。</p>
+
+        <h3>基本概念</h3>
+        <ul>
+          <li><strong>flex 容器</strong>：设置了 <code>display: flex</code> 的父元素</li>
+          <li><strong>flex 项目</strong>：容器的直接子元素</li>
+          <li><strong>主轴</strong>：默认水平方向</li>
+          <li><strong>交叉轴</strong>：与主轴垂直的方向</li>
+        </ul>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">/* 容器属性 */</span>
+<span class="token-selector">.container</span> {
+  <span class="token-property">display</span>: <span class="token-string">flex</span>;
+  <span class="token-property">flex-direction</span>: <span class="token-string">row</span>;          <span class="token-comment">/* row | column | row-reverse | column-reverse */</span>
+  <span class="token-property">justify-content</span>: <span class="token-string">center</span>;     <span class="token-comment">/* 主轴对齐：flex-start | center | space-between | space-around */</span>
+  <span class="token-property">align-items</span>: <span class="token-string">center</span>;         <span class="token-property">/* 交叉轴对齐：stretch | center | flex-start | flex-end */</span>
+  <span class="token-property">flex-wrap</span>: <span class="token-string">wrap</span>;             <span class="token-comment">/* 是否换行：nowrap | wrap */</span>
+  <span class="token-property">gap</span>: <span class="token-number">16px</span>;                   <span class="token-comment">/* 项目间距 */</span>
+}
+
+<span class="token-comment">/* 项目属性 */</span>
+<span class="token-selector">.item</span> {
+  <span class="token-property">flex</span>: <span class="token-number">1</span>;                     <span class="token-comment">/* 等分剩余空间 */</span>
+  <span class="token-property">flex-grow</span>: <span class="token-number">1</span>;              <span class="token-comment">/* 放大比例 */</span>
+  <span class="token-property">flex-shrink</span>: <span class="token-number">0</span>;            <span class="token-comment">/* 不缩小 */</span>
+  <span class="token-property">flex-basis</span>: <span class="token-number">200px</span>;           <span class="token-comment">/* 初始大小 */</span>
+}</code></pre>
+        </div>
+
+        <h3>经典布局示例</h3>
+
+        <h4>水平垂直居中</h4>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">.center</span> {
+  <span class="token-property">display</span>: <span class="token-string">flex</span>;
+  <span class="token-property">justify-content</span>: <span class="token-string">center</span>;
+  <span class="token-property">align-items</span>: <span class="token-string">center</span>;
+  <span class="token-property">min-height</span>: <span class="token-number">100vh</span>;
+}</code></pre>
+        </div>
+
+        <h4>导航栏</h4>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-selector">nav</span> {
+  <span class="token-property">display</span>: <span class="token-string">flex</span>;
+  <span class="token-property">justify-content</span>: <span class="token-string">space-between</span>;
+  <span class="token-property">align-items</span>: <span class="token-string">center</span>;
+  <span class="token-property">padding</span>: <span class="token-number">0</span> <span class="token-number">24px</span>;
+}</code></pre>
+        </div>
+
+        <div class="demo-box">
+          <div class="demo-label">Flexbox 演示</div>
+          <div class="demo-content">
+            <div style="display:flex;gap:12px;justify-content:center;align-items:center;padding:16px;background:#f1f5f9;border-radius:8px;">
+              <div style="background:#2563eb;color:white;padding:12px 20px;border-radius:6px;">项目 1</div>
+              <div style="background:#059669;color:white;padding:12px 20px;border-radius:6px;">项目 2</div>
+              <div style="background:#d97706;color:white;padding:12px 20px;border-radius:6px;">项目 3</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第8章 -->
+      <section id="responsive">
+        <h2>8. 响应式设计</h2>
+        <p>让网页在不同屏幕尺寸（手机、平板、桌面）上都能良好显示。</p>
+
+        <h3>viewport 元标签</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;meta</span> <span class="token-attr">name</span>=<span class="token-string">"viewport"</span> <span class="token-attr">content</span>=<span class="token-string">"width=device-width, initial-scale=1"</span><span class="token-tag">&gt;</span></code></pre>
+        </div>
+
+        <h3>媒体查询（Media Queries）</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">CSS</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">/* 移动端优先：默认样式给手机 */</span>
+<span class="token-selector">.container</span> {
+  <span class="token-property">padding</span>: <span class="token-number">16px</span>;
+}
+
+<span class="token-selector">.card-grid</span> {
+  <span class="token-property">display</span>: <span class="token-string">grid</span>;
+  <span class="token-property">grid-template-columns</span>: <span class="token-number">1</span><span class="token-string">fr</span>;  <span class="token-comment">/* 手机：1 列 */</span>
+  <span class="token-property">gap</span>: <span class="token-number">16px</span>;
+}
+
+<span class="token-comment">/* 平板：768px 及以上 */</span>
+<span class="token-keyword">@media</span> (<span class="token-property">min-width</span>: <span class="token-number">768px</span>) {
+  <span class="token-selector">.card-grid</span> {
+    <span class="token-property">grid-template-columns</span>: <span class="token-string">repeat(2, 1fr)</span>;  <span class="token-comment">/* 2 列 */</span>
+  }
+}
+
+<span class="token-comment">/* 桌面：1024px 及以上 */</span>
+<span class="token-keyword">@media</span> (<span class="token-property">min-width</span>: <span class="token-number">1024px</span>) {
+  <span class="token-selector">.card-grid</span> {
+    <span class="token-property">grid-template-columns</span>: <span class="token-string">repeat(3, 1fr)</span>;  <span class="token-comment">/* 3 列 */</span>
+  }
+  <span class="token-selector">.container</span> {
+    <span class="token-property">max-width</span>: <span class="token-number">1200px</span>;
+    <span class="token-property">margin</span>: <span class="token-number">0</span> <span class="token-string">auto</span>;
+  }
+}</code></pre>
+        </div>
+
+        <h3>常用响应式技巧</h3>
+        <ul>
+          <li>使用相对单位（<code>%</code>、<code>rem</code>、<code>vw</code>）而非固定像素</li>
+          <li>图片设置 <code>max-width: 100%; height: auto;</code></li>
+          <li>移动端隐藏/显示元素：<code>.mobile-only { display: block; }</code> + 媒体查询切换</li>
+          <li>Flexbox 的 <code>flex-wrap: wrap</code> 让元素自动换行</li>
+        </ul>
+      </section>
+
+      <!-- 第9章 -->
+      <section id="cheatsheet">
+        <h2>9. 常用属性速查表</h2>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>分类</th><th>属性</th><th>常用值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>文字</td><td>color, font-size, font-weight, line-height, text-align</td><td>—</td></tr>
+            <tr><td>盒模型</td><td>width, height, padding, margin, border, box-sizing</td><td>border-box</td></tr>
+            <tr><td>背景</td><td>background-color, background-image, border-radius, box-shadow</td><td>—</td></tr>
+            <tr><td>布局</td><td>display, position, top/right/bottom/left, z-index</td><td>flex, relative, absolute</td></tr>
+            <tr><td>Flex</td><td>justify-content, align-items, flex-direction, gap, flex</td><td>center, column, 1</td></tr>
+            <tr><td>溢出</td><td>overflow</td><td>hidden, auto, scroll</td></tr>
+            <tr><td>过渡</td><td>transition</td><td>all 0.3s ease</td></tr>
+            <tr><td>变换</td><td>transform</td><td>scale(1.1), rotate(45deg)</td></tr>
+            <tr><td>光标</td><td>cursor</td><td>pointer, not-allowed</td></tr>
+            <tr><td>可见性</td><td>opacity, visibility, display</td><td>0~1, hidden, none</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-note">
+          <strong>🎉 恭喜！</strong>
+          你已经掌握了 CSS 的基础知识。接下来请学习 <a href="javascript.html">JavaScript 基础教程</a>，让页面拥有交互能力。
+        </div>
+      </section>
+
+      <nav class="chapter-nav">
+        <a href="html.html">
+          <span class="nav-label">← 上一章</span>
+          <span class="nav-title">HTML 基础教程</span>
+        </a>
+        <a href="javascript.html" class="next">
+          <span class="nav-label">下一章 →</span>
+          <span class="nav-title">JavaScript 基础教程</span>
+        </a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>前端基础教程 · CSS 章节</p>
+  </footer>
+
+  <script src="../js/tutorial.js"></script>
+</body>
+
+</html>

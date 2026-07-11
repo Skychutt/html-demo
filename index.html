@@ -1,33 +1,92 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
-
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
-
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
-
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#fafafa">
+  <title>前端基础教程 - HTML / CSS / JavaScript 入门</title>
+  <meta name="description" content="从零开始学习 HTML、CSS 和 JavaScript 的完整基础语法教程，适合编程新手入门。">
+  <link rel="stylesheet" href="css/tutorial.css">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 
 <body>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="site-logo">📚 前端基础教程</a>
+      <button class="menu-toggle" aria-label="打开菜单">☰</button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">首页</a></li>
+          <li><a href="tutorial/html.html">HTML</a></li>
+          <li><a href="tutorial/css.html">CSS</a></li>
+          <li><a href="tutorial/javascript.html">JavaScript</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
+  <main>
+    <section class="hero">
+      <h1>前端开发零基础入门</h1>
+      <p>一套完整、详细、面向新手的 HTML、CSS 和 JavaScript 基础语法教程。<br>跟着学，你就能做出自己的第一个网页。</p>
+    </section>
+
+    <div class="card-grid">
+      <a href="tutorial/html.html" class="course-card">
+        <div class="card-icon">📄</div>
+        <h2>HTML 基础</h2>
+        <p>学习网页的骨架结构：标签、元素、属性、文本、链接、图片、列表、表格、表单与语义化标签。</p>
+        <span class="card-meta">10 个章节 · 建议 2-3 小时</span>
+      </a>
+
+      <a href="tutorial/css.html" class="course-card">
+        <div class="card-icon">🎨</div>
+        <h2>CSS 基础</h2>
+        <p>学习网页的样式美化：选择器、颜色字体、盒模型、布局、Flexbox、定位与响应式设计。</p>
+        <span class="card-meta">9 个章节 · 建议 3-4 小时</span>
+      </a>
+
+      <a href="tutorial/javascript.html" class="course-card">
+        <div class="card-icon">⚡</div>
+        <h2>JavaScript 基础</h2>
+        <p>学习网页的交互逻辑：变量、数据类型、条件循环、函数、数组对象、DOM 操作与事件处理。</p>
+        <span class="card-meta">11 个章节 · 建议 4-5 小时</span>
+      </a>
+    </div>
+
+    <section class="learning-path">
+      <h2>推荐学习路线</h2>
+      <ol class="path-steps">
+        <li><strong>HTML 基础</strong> — 先理解网页由什么构成，学会写基本的页面结构</li>
+        <li><strong>CSS 基础</strong> — 给页面添加颜色、布局和美观的样式</li>
+        <li><strong>JavaScript 基础</strong> — 让页面"活"起来，响应用户的点击和操作</li>
+        <li><strong>动手练习</strong> — 尝试做一个简单的个人主页或待办事项页面</li>
+      </ol>
+    </section>
+
+    <section class="learning-path">
+      <h2>你需要准备什么？</h2>
+      <ul class="path-steps" style="list-style: disc; padding-left: 2.5rem;">
+        <li style="padding-left: 0; border: none; background: none; margin-bottom: 0.5rem;">
+          <strong>一个代码编辑器</strong>：推荐 VS Code、WebStorm 或 Cursor（你现在用的就可以）
+        </li>
+        <li style="padding-left: 0; border: none; background: none; margin-bottom: 0.5rem;">
+          <strong>一个现代浏览器</strong>：Chrome、Edge 或 Firefox 均可
+        </li>
+        <li style="padding-left: 0; border: none; background: none; margin-bottom: 0.5rem;">
+          <strong>无需安装任何框架</strong>：本教程全部使用原生 HTML、CSS、JavaScript
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>前端基础教程 · 适合零基础新手 · 用浏览器直接打开即可学习</p>
+  </footer>
+
+  <script src="js/tutorial.js"></script>
 </body>
 
 </html>
