@@ -63,8 +63,12 @@
         <li><a href="#conditionals">条件语句</a></li>
         <li><a href="#loops">循环</a></li>
         <li><a href="#functions">函数</a></li>
+        <li><a href="#functions-define" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 定义方式与 return</a></li>
+        <li><a href="#functions-callback" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 回调与高阶函数</a></li>
         <li><a href="#arrays-objects">数组与对象</a></li>
         <li><a href="#dom">DOM 操作</a></li>
+        <li><a href="#dom-select" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 选择与修改</a></li>
+        <li><a href="#dom-create" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 创建与遍历</a></li>
         <li><a href="#events">事件处理</a></li>
         <li><a href="#async">异步入门</a></li>
       </ul>
@@ -336,51 +340,260 @@ fruits.forEach(<span class="token-keyword">function</span>(fruit, index) {
       <!-- 第7章 -->
       <section id="functions">
         <h2>7. 函数</h2>
-        <p>函数是可复用的代码块，接收输入（参数），返回输出（返回值）。</p>
+        <p>函数（Function）是 JavaScript 中<strong>组织代码的基本单元</strong>。你可以把一段逻辑封装起来，给它起个名字，需要时反复调用。几乎所有 JS 程序都离不开函数。</p>
 
-        <h3>函数声明</h3>
+        <h3>为什么需要函数？</h3>
+        <ul>
+          <li><strong>复用</strong>：同一段逻辑写一次，多处调用（如「格式化日期」）</li>
+          <li><strong>抽象</strong>：调用者只需知道「做什么」，不必关心「怎么做」</li>
+          <li><strong>维护</strong>：修改逻辑只改一处，不用到处找重复代码</li>
+          <li><strong>组织</strong>：把大程序拆成小块，更易阅读</li>
+        </ul>
+
         <div class="code-block">
           <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
-          <pre><code><span class="token-comment">// 函数声明</span>
-<span class="token-keyword">function</span> <span class="token-function">greet</span>(name) {
+          <pre><code><span class="token-comment">// 没有函数：重复代码</span>
+console.log(<span class="token-string">'欢迎，张三！'</span>);
+console.log(<span class="token-string">'欢迎，李四！'</span>);
+
+<span class="token-comment">// 有函数：封装后复用</span>
+<span class="token-keyword">function</span> <span class="token-function">welcome</span>(name) {
+  console.log(<span class="token-string">`欢迎，${name}！`</span>);
+}
+welcome(<span class="token-string">'张三'</span>);
+welcome(<span class="token-string">'李四'</span>);</code></pre>
+        </div>
+
+        <h3 id="functions-define">参数的传递与 return</h3>
+        <p>函数通过<strong>参数（parameter）</strong>接收外部数据，通过 <code>return</code> 把结果返回给调用者。</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>概念</th><th>说明</th><th>示例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>形参 parameter</td><td>定义函数时括号里的变量名</td><td><code>function add(a, b)</code> 中的 a、b</td></tr>
+            <tr><td>实参 argument</td><td>调用函数时传入的实际值</td><td><code>add(3, 5)</code> 中的 3、5</td></tr>
+            <tr><td>返回值</td><td><code>return</code> 后面的表达式结果</td><td>没有 return 则返回 <code>undefined</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">add</span>(a, b) {
+  <span class="token-keyword">const</span> result = a + b;
+  <span class="token-keyword">return</span> result;       <span class="token-comment">// 把结果返回给调用者</span>
+  console.log(<span class="token-string">'不会执行'</span>); <span class="token-comment">// return 之后的代码不会运行</span>
+}
+
+<span class="token-keyword">const</span> sum = add(<span class="token-number">3</span>, <span class="token-number">5</span>);  <span class="token-comment">// sum = 8</span>
+
+<span class="token-keyword">function</span> <span class="token-function">logMessage</span>(msg) {
+  console.log(msg);
+  <span class="token-comment">// 没有 return，默认返回 undefined</span>
+}
+
+<span class="token-keyword">function</span> <span class="token-function">earlyExit</span>(n) {
+  <span class="token-keyword">if</span> (n &lt; <span class="token-number">0</span>) {
+    <span class="token-keyword">return</span> <span class="token-string">'无效'</span>;  <span class="token-comment">// 提前返回，函数立即结束</span>
+  }
+  <span class="token-keyword">return</span> n * <span class="token-number">2</span>;
+}</code></pre>
+        </div>
+
+        <h3>三种定义函数的方式</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>方式</th><th>语法</th><th>特点</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>函数声明</td>
+              <td><code>function fn() { }</code></td>
+              <td>会被<strong>提升</strong>（hoisting），可在声明前调用</td>
+            </tr>
+            <tr>
+              <td>函数表达式</td>
+              <td><code>const fn = function() { }</code></td>
+              <td>不会提升，必须先定义再调用</td>
+            </tr>
+            <tr>
+              <td>箭头函数</td>
+              <td><code>const fn = () =&gt; { }</code></td>
+              <td>语法简洁，没有自己的 <code>this</code>（见下文）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 1. 函数声明 — 可以先调用后定义</span>
+sayHello(<span class="token-string">'小明'</span>);  <span class="token-comment">// ✅ 不报错（提升）</span>
+
+<span class="token-keyword">function</span> <span class="token-function">sayHello</span>(name) {
   <span class="token-keyword">return</span> <span class="token-string">`你好，${name}！`</span>;
 }
 
-<span class="token-comment">// 函数表达式</span>
+<span class="token-comment">// 2. 函数表达式 — 必须先定义</span>
 <span class="token-keyword">const</span> add = <span class="token-keyword">function</span>(a, b) {
   <span class="token-keyword">return</span> a + b;
 };
 
-<span class="token-comment">// 箭头函数（ES6，最常用）</span>
-<span class="token-keyword">const</span> multiply = (a, b) =&gt; a * b;
-<span class="token-keyword">const</span> square = x =&gt; x * x;
-<span class="token-keyword">const</span> sayHi = () =&gt; console.log(<span class="token-string">'Hi!'</span>);
+<span class="token-comment">// 3. 箭头函数 — 现代写法，最常用</span>
+<span class="token-keyword">const</span> multiply = (a, b) =&gt; a * b;           <span class="token-comment">// 单行可省略 {} 和 return</span>
+<span class="token-keyword">const</span> square = x =&gt; x * x;                    <span class="token-comment">// 单参数可省略括号</span>
+<span class="token-keyword">const</span> sayHi = () =&gt; console.log(<span class="token-string">'Hi!'</span>);       <span class="token-comment">// 无参数必须写 ()</span>
 
-console.log(greet(<span class="token-string">'小明'</span>));  <span class="token-comment">// 你好，小明！</span>
-console.log(add(<span class="token-number">2</span>, <span class="token-number">3</span>));       <span class="token-comment">// 5</span></code></pre>
+<span class="token-keyword">const</span> calc = (a, b) =&gt; {                      <span class="token-comment">// 多行必须写 {} 和 return</span>
+  <span class="token-keyword">const</span> result = a + b;
+  <span class="token-keyword">return</span> result;
+};</code></pre>
         </div>
 
-        <h3>默认参数与剩余参数</h3>
+        <h3>箭头函数 vs 普通函数</h3>
+        <p>初学阶段最需要记住的区别：</p>
+        <ul>
+          <li>箭头函数<strong>没有自己的 <code>this</code></strong>，会继承外层作用域的 <code>this</code>（写 DOM 事件时很有用）</li>
+          <li>箭头函数<strong>没有 <code>arguments</code> 对象</strong>，要用剩余参数 <code>...args</code> 代替</li>
+          <li>箭头函数<strong>不能作为构造函数</strong>（不能 <code>new</code>）</li>
+        </ul>
+
         <div class="code-block">
           <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
-          <pre><code><span class="token-keyword">function</span> <span class="token-function">createUser</span>(name, role = <span class="token-string">'用户'</span>) {
-  <span class="token-keyword">return</span> { name, role };
-}
-createUser(<span class="token-string">'张三'</span>);           <span class="token-comment">// { name: '张三', role: '用户' }</span>
-createUser(<span class="token-string">'李四'</span>, <span class="token-string">'管理员'</span>);  <span class="token-comment">// { name: '李四', role: '管理员' }</span>
+          <pre><code><span class="token-comment">// 对象方法：普通函数中 this 指向调用者</span>
+<span class="token-keyword">const</span> user = {
+  name: <span class="token-string">'张三'</span>,
+  greet: <span class="token-keyword">function</span>() {
+    console.log(<span class="token-keyword">this</span>.name);  <span class="token-comment">// '张三'</span>
+  },
+};
 
+<span class="token-comment">// 箭头函数做方法时 this 不指向 user（容易踩坑）</span>
+<span class="token-keyword">const</span> badUser = {
+  name: <span class="token-string">'李四'</span>,
+  greet: () =&gt; {
+    console.log(<span class="token-keyword">this</span>.name);  <span class="token-comment">// undefined（this 指向外层，不是 badUser）</span>
+  },
+};</code></pre>
+        </div>
+
+        <h3>默认参数、剩余参数与展开运算符</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 默认参数：调用时未传值则使用默认值</span>
+<span class="token-keyword">function</span> <span class="token-function">createUser</span>(name, role = <span class="token-string">'用户'</span>, active = <span class="token-keyword">true</span>) {
+  <span class="token-keyword">return</span> { name, role, active };
+}
+createUser(<span class="token-string">'张三'</span>);                    <span class="token-comment">// role='用户', active=true</span>
+createUser(<span class="token-string">'李四'</span>, <span class="token-string">'管理员'</span>);           <span class="token-comment">// active 仍为 true</span>
+createUser(<span class="token-string">'王五'</span>, <span class="token-string">'编辑'</span>, <span class="token-keyword">false</span>);
+
+<span class="token-comment">// 剩余参数 ...rest：把多余的实参收集成数组</span>
 <span class="token-keyword">function</span> <span class="token-function">sum</span>(...numbers) {
   <span class="token-keyword">return</span> numbers.reduce((total, n) =&gt; total + n, <span class="token-number">0</span>);
 }
-sum(<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>, <span class="token-number">4</span>);  <span class="token-comment">// 10</span></code></pre>
+sum(<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>, <span class="token-number">4</span>);  <span class="token-comment">// 10</span>
+
+<span class="token-keyword">function</span> <span class="token-function">introduce</span>(name, ...hobbies) {
+  console.log(<span class="token-string">`${name} 的爱好：`</span>, hobbies);
+}
+introduce(<span class="token-string">'小明'</span>, <span class="token-string">'阅读'</span>, <span class="token-string">'游泳'</span>, <span class="token-string">'编程'</span>);
+<span class="token-comment">// 小明 的爱好： ['阅读', '游泳', '编程']</span>
+
+<span class="token-comment">// 展开运算符 ...spread：把数组「展开」成独立参数</span>
+<span class="token-keyword">const</span> nums = [<span class="token-number">1</span>, <span class="token-number">5</span>, <span class="token-number">3</span>];
+Math.max(...nums);  <span class="token-comment">// 等同于 Math.max(1, 5, 3) → 5</span></code></pre>
         </div>
 
-        <h3>作用域</h3>
+        <h3 id="functions-callback">回调函数与高阶函数</h3>
+        <p><strong>回调函数（callback）</strong>是作为参数传给另一个函数的函数，在特定时机被「回调」执行。这是 JS 异步编程和 DOM 事件的基础。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 回调：把函数当参数传递</span>
+<span class="token-keyword">function</span> <span class="token-function">doSomething</span>(callback) {
+  console.log(<span class="token-string">'开始工作...'</span>);
+  callback();  <span class="token-comment">// 执行传入的函数</span>
+  console.log(<span class="token-string">'工作完成'</span>);
+}
+
+doSomething(<span class="token-keyword">function</span>() {
+  console.log(<span class="token-string">'中间步骤'</span>);
+});
+
+<span class="token-comment">// 数组方法大量使用回调</span>
+[<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>].map(n =&gt; n * <span class="token-number">2</span>);           <span class="token-comment">// [2, 4, 6]</span>
+[<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>].filter(n =&gt; n &gt; <span class="token-number">1</span>);       <span class="token-comment">// [2, 3]</span>
+[<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>].forEach(n =&gt; console.log(n));
+
+<span class="token-comment">// 高阶函数：接收或返回函数的函数</span>
+<span class="token-keyword">function</span> <span class="token-function">repeat</span>(times, fn) {
+  <span class="token-keyword">for</span> (<span class="token-keyword">let</span> i = <span class="token-number">0</span>; i &lt; times; i++) {
+    fn(i);
+  }
+}
+repeat(<span class="token-number">3</span>, (i) =&gt; console.log(<span class="token-string">`第 ${i} 次`</span>));</code></pre>
+        </div>
+
+        <h3>作用域与闭包入门</h3>
+        <p><strong>作用域</strong>决定变量在哪些地方可以被访问：</p>
         <ul>
-          <li><strong>全局作用域</strong>：在函数外声明的变量，整个脚本都能访问</li>
-          <li><strong>函数作用域</strong>：在函数内声明的变量，只在函数内有效</li>
-          <li><strong>块级作用域</strong>：<code>let</code> 和 <code>const</code> 在 <code>{ }</code> 块内有效</li>
+          <li><strong>全局作用域</strong>：函数外声明，整个脚本可访问</li>
+          <li><strong>函数作用域</strong>：函数内声明，只在函数内有效</li>
+          <li><strong>块级作用域</strong>：<code>let</code> / <code>const</code> 在 <code>{ }</code> 内有效；<code>var</code> 没有块级作用域（不推荐用 var）</li>
         </ul>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> globalVar = <span class="token-string">'全局'</span>;
+
+<span class="token-keyword">function</span> <span class="token-function">outer</span>() {
+  <span class="token-keyword">const</span> outerVar = <span class="token-string">'外层'</span>;
+
+  <span class="token-keyword">function</span> <span class="token-function">inner</span>() {
+    <span class="token-keyword">const</span> innerVar = <span class="token-string">'内层'</span>;
+    console.log(globalVar);  <span class="token-comment">// ✅ 可以访问全局</span>
+    console.log(outerVar);   <span class="token-comment">// ✅ 可以访问外层</span>
+    console.log(innerVar);   <span class="token-comment">// ✅ 可以访问自身</span>
+  }
+
+  inner();
+  <span class="token-comment">// console.log(innerVar);  // ❌ 无法访问 inner 内部的变量</span>
+}
+
+outer();</code></pre>
+        </div>
+
+        <p><strong>闭包（closure）</strong>：内部函数「记住」了外部函数的变量，即使外部函数已经执行完毕。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">createCounter</span>() {
+  <span class="token-keyword">let</span> count = <span class="token-number">0</span>;  <span class="token-comment">// 被内部函数「闭包」保存</span>
+
+  <span class="token-keyword">return</span> {
+    increment() { <span class="token-keyword">return</span> ++count; },
+    decrement() { <span class="token-keyword">return</span> --count; },
+    getCount() { <span class="token-keyword">return</span> count; },
+  };
+}
+
+<span class="token-keyword">const</span> counter = createCounter();
+counter.increment();  <span class="token-comment">// 1</span>
+counter.increment();  <span class="token-comment">// 2</span>
+counter.getCount();   <span class="token-comment">// 2</span>
+<span class="token-comment">// count 变量外部无法直接访问，只能通过返回的方法操作</span></code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <strong>💡 函数编写建议</strong>
+          <ul style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li>函数名用动词开头：<code>getUser</code>、<code>calculateTotal</code>、<code>renderList</code></li>
+            <li>一个函数只做一件事，保持简短</li>
+            <li>优先用箭头函数写回调，对象方法用普通函数或 ES6 简写 <code>greet() { }</code></li>
+            <li>参数不宜过多，超过 3 个可考虑传对象</li>
+          </ul>
+        </div>
       </section>
 
       <!-- 第8章 -->
@@ -458,74 +671,294 @@ Object.values(user);  <span class="token-comment">// ['张三', 25, '北京', fu
       <!-- 第9章 -->
       <section id="dom">
         <h2>9. DOM 操作</h2>
-        <p>DOM（Document Object Model）是浏览器将 HTML 文档解析成的树形结构。JavaScript 通过 DOM API 来查找、修改、创建和删除页面元素。</p>
+        <p>DOM（Document Object Model，文档对象模型）是浏览器把 HTML 解析成的<strong>树形结构</strong>。每个 HTML 标签对应树中的一个<strong>节点（node）</strong>，JavaScript 可以通过 DOM API 查找、修改、创建和删除这些节点，从而动态改变页面。</p>
 
-        <h3>选择元素</h3>
-        <div class="code-block">
-          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
-          <pre><code><span class="token-comment">// 选择一个元素</span>
-document.getElementById(<span class="token-string">'header'</span>);
-document.querySelector(<span class="token-string">'.btn'</span>);          <span class="token-comment">// 第一个匹配 CSS 选择器的</span>
-document.querySelector(<span class="token-string">'nav a.active'</span>);
+        <h3>DOM 树结构</h3>
+        <p>浏览器加载 HTML 后，会构建如下层级关系：</p>
+        <div style="background:#f1f5f9;padding:1.25rem;border-radius:8px;font-family:monospace;font-size:0.875rem;line-height:1.8;margin:1rem 0;">
+          document<br>
+          └── html<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;├── head<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── title<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── meta<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;└── body<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── h1<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── p<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── div#app<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── button
+        </div>
+        <ul>
+          <li><code>document</code>：整个页面的入口对象，代表 HTML 文档本身</li>
+          <li><strong>元素节点</strong>：如 <code>&lt;div&gt;</code>、<code>&lt;p&gt;</code></li>
+          <li><strong>文本节点</strong>：标签内的文字内容</li>
+          <li><strong>属性</strong>：如 <code>id</code>、<code>class</code>、<code>href</code></li>
+        </ul>
 
-<span class="token-comment">// 选择多个元素</span>
-document.querySelectorAll(<span class="token-string">'li'</span>);       <span class="token-comment">// NodeList</span>
-document.getElementsByClassName(<span class="token-string">'item'</span>);
-document.getElementsByTagName(<span class="token-string">'p'</span>);</code></pre>
+        <div class="callout callout-note">
+          <strong>📝 打开 DevTools 查看 DOM</strong>
+          按 F12 → Elements 面板，就能看到实时的 DOM 树。你在 JS 里做的修改会立刻反映在这里。
         </div>
 
-        <h3>修改内容和样式</h3>
+        <h3 id="dom-select">选择元素</h3>
+        <p>操作 DOM 的第一步是「找到目标元素」。现代开发推荐优先使用 <code>querySelector</code> 系列。</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>方法</th><th>返回</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>getElementById('id')</code></td>
+              <td>单个元素或 null</td>
+              <td>按 id 查找，id 在页面中应唯一</td>
+            </tr>
+            <tr>
+              <td><code>querySelector('.class')</code></td>
+              <td>第一个匹配或 null</td>
+              <td>支持任意 CSS 选择器，<strong>最常用</strong></td>
+            </tr>
+            <tr>
+              <td><code>querySelectorAll('li')</code></td>
+              <td>NodeList（类数组）</td>
+              <td>匹配所有符合的元素</td>
+            </tr>
+            <tr>
+              <td><code>getElementsByClassName('c')</code></td>
+              <td>HTMLCollection（动态）</td>
+              <td>按 class 查找，较少用</td>
+            </tr>
+            <tr>
+              <td><code>getElementsByTagName('p')</code></td>
+              <td>HTMLCollection</td>
+              <td>按标签名查找</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 按 id — 最快，但只能用于有 id 的元素</span>
+<span class="token-keyword">const</span> header = document.getElementById(<span class="token-string">'header'</span>);
+
+<span class="token-comment">// querySelector — 推荐，支持所有 CSS 选择器</span>
+<span class="token-keyword">const</span> btn = document.querySelector(<span class="token-string">'.btn'</span>);              <span class="token-comment">// class</span>
+<span class="token-keyword">const</span> firstItem = document.querySelector(<span class="token-string">'ul li'</span>);     <span class="token-comment">// 后代</span>
+<span class="token-keyword">const</span> activeLink = document.querySelector(<span class="token-string">'nav a.active'</span>);
+<span class="token-keyword">const</span> submitBtn = document.querySelector(<span class="token-string">'button[type="submit"]'</span>);
+
+<span class="token-comment">// querySelectorAll — 选中多个，返回 NodeList</span>
+<span class="token-keyword">const</span> allItems = document.querySelectorAll(<span class="token-string">'.list-item'</span>);
+allItems.forEach(item =&gt; {
+  item.classList.add(<span class="token-string">'processed'</span>);
+});
+
+<span class="token-comment">// 在已选中的元素内部继续查找（缩小范围）</span>
+<span class="token-keyword">const</span> nav = document.querySelector(<span class="token-string">'nav'</span>);
+<span class="token-keyword">const</span> navLinks = nav.querySelectorAll(<span class="token-string">'a'</span>);  <span class="token-comment">// 只在 nav 内部找</span></code></pre>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>⚠️ 注意</strong>
+          <code>querySelector</code> 找不到元素时返回 <code>null</code>。对 null 调用方法会报错，使用前先判断：
+          <code>if (btn) { btn.addEventListener(...) }</code>
+        </div>
+
+        <h3>修改内容和属性</h3>
+        <h4>textContent vs innerHTML vs innerText</h4>
+        <table class="data-table">
+          <thead>
+            <tr><th>属性</th><th>行为</th><th>使用场景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>textContent</code></td>
+              <td>获取/设置纯文本，会解析所有子节点的文字</td>
+              <td><strong>推荐</strong>，安全，不受 HTML 标签影响</td>
+            </tr>
+            <tr>
+              <td><code>innerHTML</code></td>
+              <td>获取/设置 HTML 字符串，会解析标签</td>
+              <td>需要插入 HTML 结构时用，注意 XSS 安全风险</td>
+            </tr>
+            <tr>
+              <td><code>innerText</code></td>
+              <td>只返回「可见」文字，受 CSS 影响</td>
+              <td>需要模拟用户看到的文字时</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> box = document.querySelector(<span class="token-string">'#box'</span>);
+
+<span class="token-comment">// 纯文本（安全）</span>
+box.textContent = <span class="token-string">'Hello World'</span>;
+
+<span class="token-comment">// 插入 HTML（用户输入的内容不要直接 innerHTML！）</span>
+box.innerHTML = <span class="token-string">'&lt;strong&gt;加粗&lt;/strong&gt; 文字'</span>;
+
+<span class="token-comment">// 标准属性</span>
+<span class="token-keyword">const</span> img = document.querySelector(<span class="token-string">'img'</span>);
+img.src = <span class="token-string">'photo.jpg'</span>;
+img.alt = <span class="token-string">'描述'</span>;
+
+<span class="token-keyword">const</span> link = document.querySelector(<span class="token-string">'a'</span>);
+link.href = <span class="token-string">'https://example.com'</span>;
+
+<span class="token-comment">// 通用属性读写</span>
+link.setAttribute(<span class="token-string">'target'</span>, <span class="token-string">'_blank'</span>);
+link.getAttribute(<span class="token-string">'href'</span>);
+link.hasAttribute(<span class="token-string">'disabled'</span>);
+link.removeAttribute(<span class="token-string">'title'</span>);
+
+<span class="token-comment">// data-* 自定义属性（HTML5）</span>
+<span class="token-comment">// HTML: &lt;div data-user-id="42" data-role="admin"&gt;</span>
+<span class="token-keyword">const</span> el = document.querySelector(<span class="token-string">'[data-user-id]'</span>);
+el.dataset.userId;   <span class="token-comment">// '42'（自动转为 camelCase）</span>
+el.dataset.role;     <span class="token-comment">// 'admin'</span>
+el.dataset.status = <span class="token-string">'online'</span>;  <span class="token-comment">// 设置 data-status="online"</span></code></pre>
+        </div>
+
+        <h3>修改样式</h3>
+        <p>有两种方式：直接改 <code>style</code>，或操作 <code>class</code>（推荐）。</p>
+
         <div class="code-block">
           <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
           <pre><code><span class="token-keyword">const</span> title = document.querySelector(<span class="token-string">'h1'</span>);
 
-<span class="token-comment">// 文本内容</span>
-title.textContent = <span class="token-string">'新标题'</span>;       <span class="token-comment">// 纯文本</span>
-title.innerHTML = <span class="token-string">'&lt;em&gt;新标题&lt;/em&gt;'</span>;  <span class="token-comment">// 可含 HTML（注意 XSS 风险）</span>
-
-<span class="token-comment">// 属性</span>
-<span class="token-keyword">const</span> link = document.querySelector(<span class="token-string">'a'</span>);
-link.href = <span class="token-string">'https://example.com'</span>;
-link.setAttribute(<span class="token-string">'target'</span>, <span class="token-string">'_blank'</span>);
-link.getAttribute(<span class="token-string">'href'</span>);
-
-<span class="token-comment">// CSS 样式</span>
+<span class="token-comment">// 方式一：内联 style（camelCase 写法）</span>
 title.style.color = <span class="token-string">'red'</span>;
-title.style.fontSize = <span class="token-string">'24px'</span>;
+title.style.fontSize = <span class="token-string">'24px'</span>;       <span class="token-comment">// 对应 CSS font-size</span>
+title.style.backgroundColor = <span class="token-string">'#f0f0f0'</span>;
+title.style.display = <span class="token-string">'none'</span>;         <span class="token-comment">// 隐藏元素</span>
 
-<span class="token-comment">// CSS 类（推荐）</span>
-title.classList.add(<span class="token-string">'active'</span>);
-title.classList.remove(<span class="token-string">'hidden'</span>);
-title.classList.toggle(<span class="token-string">'highlight'</span>);
-title.classList.contains(<span class="token-string">'active'</span>);  <span class="token-comment">// true/false</span></code></pre>
+<span class="token-comment">// 方式二：classList（推荐 — 样式写在 CSS 里，JS 只切换类名）</span>
+title.classList.add(<span class="token-string">'active'</span>);       <span class="token-comment">// 添加类</span>
+title.classList.remove(<span class="token-string">'hidden'</span>);    <span class="token-comment">// 移除类</span>
+title.classList.toggle(<span class="token-string">'highlight'</span>); <span class="token-comment">// 有则删、无则加</span>
+title.classList.contains(<span class="token-string">'active'</span>);  <span class="token-comment">// true / false</span>
+title.classList.replace(<span class="token-string">'old'</span>, <span class="token-string">'new'</span>); <span class="token-comment">// 替换类名</span>
+
+<span class="token-comment">// 读取计算后的样式（只读）</span>
+<span class="token-keyword">const</span> styles = getComputedStyle(title);
+styles.fontSize;  <span class="token-comment">// 如 '32px'</span></code></pre>
         </div>
 
-        <h3>创建和删除元素</h3>
+        <h3 id="dom-create">创建、插入与删除元素</h3>
+        <p>动态内容（待办列表、评论、弹窗等）都需要用 JS 创建新元素并插入 DOM。</p>
+
         <div class="code-block">
           <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
-          <pre><code><span class="token-comment">// 创建</span>
+          <pre><code><span class="token-comment">// 1. 创建元素</span>
 <span class="token-keyword">const</span> li = document.createElement(<span class="token-string">'li'</span>);
 li.textContent = <span class="token-string">'新项目'</span>;
 li.classList.add(<span class="token-string">'list-item'</span>);
 
-<span class="token-comment">// 添加到 DOM</span>
-<span class="token-keyword">const</span> list = document.querySelector(<span class="token-string">'ul'</span>);
-list.appendChild(li);          <span class="token-comment">// 末尾添加</span>
-list.prepend(li);              <span class="token-comment">// 开头添加</span>
-list.insertBefore(li, refNode); <span class="token-comment">// 指定位置</span>
+<span class="token-comment">// 2. 设置属性和内容</span>
+li.setAttribute(<span class="token-string">'data-id'</span>, <span class="token-string">'123'</span>);
 
-<span class="token-comment">// 删除</span>
-li.remove();                   <span class="token-comment">// 现代写法</span>
-list.removeChild(li);          <span class="token-comment">// 传统写法</span></code></pre>
+<span class="token-comment">// 3. 插入到 DOM（选一种）</span>
+<span class="token-keyword">const</span> list = document.querySelector(<span class="token-string">'ul'</span>);
+list.appendChild(li);              <span class="token-comment">// 末尾追加（传统）</span>
+list.prepend(li);                  <span class="token-comment">// 开头插入</span>
+list.before(li);                   <span class="token-comment">// 插到 list 前面（同级）</span>
+list.after(li);                    <span class="token-comment">// 插到 list 后面（同级）</span>
+list.insertBefore(li, refNode);    <span class="token-comment">// 插到 refNode 之前</span>
+
+<span class="token-comment">// 现代写法：insertAdjacentElement / insertAdjacentHTML</span>
+list.insertAdjacentHTML(<span class="token-string">'beforeend'</span>, <span class="token-string">'&lt;li&gt;快速插入&lt;/li&gt;'</span>);
+<span class="token-comment">// 位置：beforebegin | afterbegin | beforeend | afterend</span>
+
+<span class="token-comment">// 4. 删除元素</span>
+li.remove();                       <span class="token-comment">// 现代写法，元素自己删除自己</span>
+list.removeChild(li);              <span class="token-comment">// 传统：父元素删子元素</span>
+list.innerHTML = <span class="token-string">''</span>;               <span class="token-comment">// 清空所有子元素（简单但会移除事件监听）</span></code></pre>
+        </div>
+
+        <h3>批量创建：DocumentFragment</h3>
+        <p>循环插入大量元素时，先用 DocumentFragment 在内存中组装，再一次性插入 DOM，性能更好。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> fragment = document.createDocumentFragment();
+<span class="token-keyword">const</span> items = [<span class="token-string">'苹果'</span>, <span class="token-string">'香蕉'</span>, <span class="token-string">'橙子'</span>];
+
+items.forEach(text =&gt; {
+  <span class="token-keyword">const</span> li = document.createElement(<span class="token-string">'li'</span>);
+  li.textContent = text;
+  fragment.appendChild(li);  <span class="token-comment">// 先放到 fragment，不触发页面重绘</span>
+});
+
+document.querySelector(<span class="token-string">'ul'</span>).appendChild(fragment);  <span class="token-comment">// 一次性插入</span></code></pre>
+        </div>
+
+        <h3>遍历 DOM 节点</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> child = document.querySelector(<span class="token-string">'.item'</span>);
+
+<span class="token-comment">// 上下级关系</span>
+child.parentElement;           <span class="token-comment">// 父元素</span>
+child.closest(<span class="token-string">'nav'</span>);        <span class="token-comment">// 向上找最近的 nav 祖先</span>
+child.children;                <span class="token-comment">// 子元素集合（仅元素节点）</span>
+child.firstElementChild;
+child.lastElementChild;
+
+<span class="token-comment">// 同级关系</span>
+child.nextElementSibling;      <span class="token-comment">// 下一个兄弟元素</span>
+child.previousElementSibling;  <span class="token-comment">// 上一个兄弟元素</span>
+
+<span class="token-comment">// 遍历所有子元素</span>
+child.querySelectorAll(<span class="token-string">'span'</span>);</code></pre>
+        </div>
+
+        <h3>DOM 就绪：DOMContentLoaded</h3>
+        <p>JS 如果在 HTML 元素之前执行，会找不到元素。应等 DOM 解析完成后再操作：</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 方式一：script 放在 &lt;/body&gt; 前（最简单）</span>
+
+<span class="token-comment">// 方式二：监听 DOMContentLoaded</span>
+document.addEventListener(<span class="token-string">'DOMContentLoaded'</span>, () =&gt; {
+  <span class="token-keyword">const</span> btn = document.querySelector(<span class="token-string">'#myBtn'</span>);
+  btn.addEventListener(<span class="token-string">'click'</span>, () =&gt; {
+    console.log(<span class="token-string">'DOM 已就绪，可以安全操作元素'</span>);
+  });
+});</code></pre>
         </div>
 
         <div class="demo-box">
-          <div class="demo-label">DOM 操作演示 — 点击按钮修改下方文字</div>
+          <div class="demo-label">DOM 演示 1 — 修改文字与样式</div>
           <div class="demo-content">
             <p id="demo-text" style="font-size:1.125rem;">原始文字</p>
             <button class="js-demo-btn" id="demo-change-btn" type="button">修改文字</button>
             <button class="js-demo-btn" id="demo-reset-btn" type="button">重置</button>
           </div>
+        </div>
+
+        <div class="demo-box">
+          <div class="demo-label">DOM 演示 2 — 动态增删列表项</div>
+          <div class="demo-content">
+            <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+              <input type="text" id="todo-input" placeholder="输入待办事项..." style="flex:1;padding:0.5rem 0.75rem;border:1px solid #e2e8f0;border-radius:6px;font-size:0.9375rem;">
+              <button class="js-demo-btn" id="todo-add-btn" type="button" style="margin-top:0;">添加</button>
+            </div>
+            <ul id="todo-list" style="list-style:none;padding:0;margin:0;"></ul>
+            <p id="todo-empty" style="color:#64748b;font-size:0.875rem;margin:0.5rem 0 0;">暂无待办，输入后点击添加</p>
+          </div>
+        </div>
+
+        <div class="callout callout-tip">
+          <strong>💡 DOM 操作最佳实践</strong>
+          <ul style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li>优先用 <code>querySelector</code>，用 class/id 而非复杂路径</li>
+            <li>样式改动优先切换 class，而非逐个改 <code>style.xxx</code></li>
+            <li>用户输入的内容用 <code>textContent</code> 插入，避免 XSS</li>
+            <li>缓存 DOM 引用（<code>const btn = document.querySelector(...)</code>），不要重复查询</li>
+            <li>批量插入用 DocumentFragment 或 <code>insertAdjacentHTML</code></li>
+          </ul>
         </div>
       </section>
 
@@ -748,6 +1181,56 @@ localStorage.clear();  <span class="token-comment">// 清空全部</span></code>
       if (minusBtn) minusBtn.addEventListener('click', function () { count--; updateCounter(); });
       if (plusBtn) plusBtn.addEventListener('click', function () { count++; updateCounter(); });
       if (counterReset) counterReset.addEventListener('click', function () { count = 0; updateCounter(); });
+
+      // 待办列表演示
+      var todoInput = document.getElementById('todo-input');
+      var todoAddBtn = document.getElementById('todo-add-btn');
+      var todoList = document.getElementById('todo-list');
+      var todoEmpty = document.getElementById('todo-empty');
+
+      function updateTodoEmpty() {
+        if (todoEmpty && todoList) {
+          todoEmpty.style.display = todoList.children.length ? 'none' : 'block';
+        }
+      }
+
+      function addTodo(text) {
+        if (!todoList || !text.trim()) return;
+
+        var li = document.createElement('li');
+        li.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.625rem 0.75rem;margin-bottom:0.5rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;';
+
+        var span = document.createElement('span');
+        span.textContent = text.trim();
+
+        var delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.textContent = '删除';
+        delBtn.style.cssText = 'background:#fee2e2;color:#dc2626;border:none;padding:0.25rem 0.625rem;border-radius:4px;cursor:pointer;font-size:0.8125rem;';
+        delBtn.addEventListener('click', function () {
+          li.remove();
+          updateTodoEmpty();
+        });
+
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        todoList.appendChild(li);
+        updateTodoEmpty();
+      }
+
+      if (todoAddBtn && todoInput) {
+        todoAddBtn.addEventListener('click', function () {
+          addTodo(todoInput.value);
+          todoInput.value = '';
+          todoInput.focus();
+        });
+        todoInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            addTodo(todoInput.value);
+            todoInput.value = '';
+          }
+        });
+      }
     })();
   </script>
 </body>
