@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TypeScript 基础教程 - 前端基础教程</title>
+  <meta name="description" content="从零开始学习 TypeScript：类型系统、接口、泛型、与 JavaScript 的区别及实战用法。">
+  <link rel="stylesheet" href="../css/tutorial.css">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-logo">📚 前端基础教程</a>
+      <button class="menu-toggle" aria-label="打开菜单">☰</button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="html.html">HTML</a></li>
+          <li><a href="css.html">CSS</a></li>
+          <li><a href="javascript.html">JavaScript</a></li>
+          <li><a href="typescript.html" class="active">TypeScript</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="sidebar-title">本章目录</p>
+      <ul class="toc">
+        <li><a href="#intro">什么是 TypeScript</a></li>
+        <li><a href="#vs-js">与 JavaScript 的区别</a></li>
+        <li><a href="#setup">环境搭建</a></li>
+        <li><a href="#basic-types">基础类型</a></li>
+        <li><a href="#annotation">类型注解与推断</a></li>
+        <li><a href="#interface">接口 Interface</a></li>
+        <li><a href="#union-alias">联合类型与类型别名</a></li>
+        <li><a href="#functions">函数类型</a></li>
+        <li><a href="#classes">类 Class</a></li>
+        <li><a href="#generics">泛型 Generics</a></li>
+        <li><a href="#enum-literal">枚举与字面量类型</a></li>
+        <li><a href="#narrowing">类型收窄</a></li>
+        <li><a href="#modules">模块与 tsconfig</a></li>
+        <li><a href="#utility">工具类型</a></li>
+        <li><a href="#best-practices">最佳实践</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">TypeScript 基础教程</h1>
+      <p class="page-desc">TypeScript（简称 TS）是 JavaScript 的<strong>超集</strong>——在 JS 基础上增加了<strong>静态类型系统</strong>。写代码时就能发现错误，大型项目更易维护。本教程假设你已学完 <a href="javascript.html">JavaScript 基础</a>。</p>
+
+      <!-- 第1章 -->
+      <section id="intro">
+        <h2>1. 什么是 TypeScript？</h2>
+        <p>TypeScript 由微软开发，2012 年发布，目前已是前端工程化的事实标准。React、Vue、Angular 等主流框架都原生支持 TS。</p>
+
+        <h3>核心概念：JS + 类型</h3>
+        <p>所有合法的 JavaScript 代码，都是合法的 TypeScript 代码。TS 额外允许你声明「这个变量是什么类型」：</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// JavaScript 写法 — TS 完全支持</span>
+<span class="token-keyword">let</span> name = <span class="token-string">'小明'</span>;
+
+<span class="token-comment">// TypeScript 额外支持：显式标注类型</span>
+<span class="token-keyword">let</span> age: <span class="token-keyword">number</span> = <span class="token-number">18</span>;
+<span class="token-keyword">let</span> isStudent: <span class="token-keyword">boolean</span> = <span class="token-keyword">true</span>;</code></pre>
+        </div>
+
+        <h3>为什么需要 TypeScript？</h3>
+        <ul>
+          <li><strong>提前发现错误</strong>：类型不对在写代码时就会报错，不用等到运行时</li>
+          <li><strong>更好的编辑器体验</strong>：自动补全、跳转定义、重构更安全</li>
+          <li><strong>代码即文档</strong>：类型声明说明了函数期望什么参数、返回什么</li>
+          <li><strong>大型项目必备</strong>：多人协作、代码量大时，类型系统是安全网</li>
+        </ul>
+
+        <h3>重要：TS 最终会变成 JS</h3>
+        <p>浏览器和 Node.js <strong>不能直接运行</strong> TypeScript。你需要用编译器（<code>tsc</code>）把 <code>.ts</code> 文件<strong>编译（转译）</strong>成 <code>.js</code> 后再运行。类型信息在编译后会被完全擦除，不影响运行时性能。</p>
+
+        <div class="callout callout-tip">
+          <strong>💡 学习前提</strong>
+          请先掌握 JavaScript 基础（变量、函数、对象、数组、ES6+ 语法）。TypeScript 不是一门新语言，而是给 JS 加了类型层。
+        </div>
+      </section>
+
+      <!-- 第2章：与 JS 的区别 -->
+      <section id="vs-js">
+        <h2>2. TypeScript 与 JavaScript 的区别</h2>
+        <p>这是新手最关心的问题。下面从多个维度对比，帮你建立清晰认知。</p>
+
+        <h3>一句话总结</h3>
+        <div class="callout callout-note">
+          <strong>JavaScript</strong> 是运行在浏览器/Node 上的<strong>动态类型脚本语言</strong>。<br>
+          <strong>TypeScript</strong> 是 JavaScript 的<strong>超集</strong>，增加了静态类型检查，编译后变成 JavaScript。
+        </div>
+
+        <h3>核心区别对照表</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>对比项</th>
+              <th>JavaScript</th>
+              <th>TypeScript</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>类型检查</td>
+              <td>运行时才知道类型错误</td>
+              <td>编写代码时（编译期）就检查</td>
+            </tr>
+            <tr>
+              <td>类型声明</td>
+              <td>不需要，变量类型随时可变</td>
+              <td>可选但推荐显式声明类型</td>
+            </tr>
+            <tr>
+              <td>文件扩展名</td>
+              <td><code>.js</code> / <code>.mjs</code></td>
+              <td><code>.ts</code> / <code>.tsx</code>（含 JSX）</td>
+            </tr>
+            <tr>
+              <td>运行方式</td>
+              <td>浏览器/Node 直接运行</td>
+              <td>必须先编译成 JS 再运行</td>
+            </tr>
+            <tr>
+              <td>错误发现时机</td>
+              <td>运行时（用户可能遇到 bug）</td>
+              <td>开发时（编辑器 + 编译器报错）</td>
+            </tr>
+            <tr>
+              <td>IDE 支持</td>
+              <td>基础补全</td>
+              <td>精准补全、类型提示、安全重构</td>
+            </tr>
+            <tr>
+              <td>学习曲线</td>
+              <td>较低，入门快</td>
+              <td>需先会 JS，再学类型概念</td>
+            </tr>
+            <tr>
+              <td>适用场景</td>
+              <td>小脚本、快速原型、简单页面</td>
+              <td>中大型项目、团队协作、框架开发</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>同一段代码的对比</h3>
+        <p>下面这个函数，在 JS 中不会报错，但运行结果可能是错的：</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">add</span>(a, b) {
+  <span class="token-keyword">return</span> a + b;
+}
+
+add(<span class="token-number">1</span>, <span class="token-number">2</span>);       <span class="token-comment">// 3 ✅</span>
+add(<span class="token-string">'1'</span>, <span class="token-string">'2'</span>);     <span class="token-comment">// '12' ⚠️ 字符串拼接，可能不是预期</span>
+add(<span class="token-number">1</span>, <span class="token-string">'2'</span>);       <span class="token-comment">// '12' ⚠️</span>
+add(<span class="token-number">1</span>);            <span class="token-comment">// NaN ⚠️ 少传参数，运行时才暴露</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">add</span>(a: <span class="token-keyword">number</span>, b: <span class="token-keyword">number</span>): <span class="token-keyword">number</span> {
+  <span class="token-keyword">return</span> a + b;
+}
+
+add(<span class="token-number">1</span>, <span class="token-number">2</span>);       <span class="token-comment">// 3 ✅</span>
+add(<span class="token-string">'1'</span>, <span class="token-string">'2'</span>);     <span class="token-comment">// ❌ 编译报错：参数类型不匹配</span>
+add(<span class="token-number">1</span>);            <span class="token-comment">// ❌ 编译报错：缺少参数 b</span></code></pre>
+        </div>
+
+        <h3>JS 有但 TS 更严格的点</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>场景</th><th>JavaScript</th><th>TypeScript</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>访问不存在的属性</td>
+              <td>返回 <code>undefined</code>，不报错</td>
+              <td>编译报错：Property 'xxx' does not exist</td>
+            </tr>
+            <tr>
+              <td><code>null</code> / <code>undefined</code></td>
+              <td>随意使用，运行时报错</td>
+              <td>默认不允许（可配置 <code>strictNullChecks</code>）</td>
+            </tr>
+            <tr>
+              <td>函数参数数量</td>
+              <td>多传少传都不报错</td>
+              <td>参数个数、类型必须匹配</td>
+            </tr>
+            <tr>
+              <td>对象结构</td>
+              <td>任意添加属性</td>
+              <td>必须符合 interface / type 定义</td>
+            </tr>
+            <tr>
+              <td><code>this</code> 指向</td>
+              <td>运行时才知道</td>
+              <td>可在编译期标注 this 类型</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>TS 有但 JS 没有的特性</h3>
+        <ul>
+          <li><strong>类型注解</strong>：<code>let x: number = 1</code></li>
+          <li><strong>接口（interface）</strong>：描述对象结构</li>
+          <li><strong>类型别名（type）</strong>：自定义类型名</li>
+          <li><strong>泛型（generics）</strong>：<code>Array&lt;string&gt;</code>、<code>Promise&lt;User&gt;</code></li>
+          <li><strong>枚举（enum）</strong>：命名常量集合</li>
+          <li><strong>访问修饰符</strong>：<code>public</code>、<code>private</code>、<code>protected</code></li>
+          <li><strong>工具类型</strong>：<code>Partial&lt;T&gt;</code>、<code>Pick&lt;T, K&gt;</code> 等</li>
+          <li><strong>联合类型</strong>：<code>string | number</code></li>
+        </ul>
+
+        <h3>兼容性：JS 代码可以直接变成 TS 吗？</h3>
+        <p><strong>可以。</strong> TypeScript 的设计目标就是平滑迁移：</p>
+        <ol>
+          <li>把 <code>.js</code> 文件改名为 <code>.ts</code></li>
+          <li>逐步添加类型，不必一次改完</li>
+          <li>设置 <code>"allowJs": true</code> 可让 JS 和 TS 文件共存</li>
+        </ol>
+
+        <h3>什么时候用 JS，什么时候用 TS？</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>选 JavaScript</th><th>选 TypeScript</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>学习编程的前几周</td>
+              <td>已掌握 JS 基础，做正式项目</td>
+            </tr>
+            <tr>
+              <td>几十行的小工具脚本</td>
+              <td>React / Vue / Node 后端项目</td>
+            </tr>
+            <tr>
+              <td>快速验证想法的原型</td>
+              <td>多人协作、长期维护的代码库</td>
+            </tr>
+            <tr>
+              <td>不想配置编译流程</td>
+              <td>需要可靠的重构和自动补全</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+          <strong>⚠️ 常见误解</strong>
+          <ul style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li>TS 不是替代 JS，而是编译成 JS</li>
+            <li>TS 不会提升运行时性能（类型在编译后被擦除）</li>
+            <li>学 TS 之前必须先会 JS，否则两头都不扎实</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 第3章 -->
+      <section id="setup">
+        <h2>3. 环境搭建</h2>
+
+        <h3>安装 Node.js 和 TypeScript</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">终端</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment"># 确认 Node.js 已安装（需 v18+ 推荐）</span>
+node -v
+npm -v
+
+<span class="token-comment"># 全局安装 TypeScript 编译器</span>
+npm install -g typescript
+
+<span class="token-comment"># 查看版本</span>
+tsc -v</code></pre>
+        </div>
+
+        <h3>第一个 TypeScript 程序</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">hello.ts</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> greeting: <span class="token-keyword">string</span> = <span class="token-string">'Hello, TypeScript!'</span>;
+console.log(greeting);
+
+<span class="token-keyword">function</span> <span class="token-function">add</span>(a: <span class="token-keyword">number</span>, b: <span class="token-keyword">number</span>): <span class="token-keyword">number</span> {
+  <span class="token-keyword">return</span> a + b;
+}
+
+console.log(add(<span class="token-number">10</span>, <span class="token-number">20</span>));</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">终端</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment"># 编译：hello.ts → hello.js</span>
+tsc hello.ts
+
+<span class="token-comment"># 运行编译后的 JS</span>
+node hello.js</code></pre>
+        </div>
+
+        <h3>tsconfig.json 配置文件</h3>
+        <p>实际项目中用配置文件统一管理编译选项：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">tsconfig.json</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code>{
+  <span class="token-string">"compilerOptions"</span>: {
+    <span class="token-string">"target"</span>: <span class="token-string">"ES2020"</span>,           <span class="token-comment">// 编译目标 JS 版本</span>
+    <span class="token-string">"module"</span>: <span class="token-string">"ESNext"</span>,           <span class="token-comment">// 模块系统</span>
+    <span class="token-string">"strict"</span>: <span class="token-keyword">true</span>,              <span class="token-comment">// 开启所有严格检查（推荐）</span>
+    <span class="token-string">"outDir"</span>: <span class="token-string">"./dist"</span>,           <span class="token-comment">// 输出目录</span>
+    <span class="token-string">"rootDir"</span>: <span class="token-string">"./src"</span>,          <span class="token-comment">// 源码目录</span>
+    <span class="token-string">"esModuleInterop"</span>: <span class="token-keyword">true</span>,     <span class="token-comment">// 兼容 CommonJS 模块</span>
+    <span class="token-string">"skipLibCheck"</span>: <span class="token-keyword">true</span>         <span class="token-comment">// 跳过库文件类型检查</span>
+  },
+  <span class="token-string">"include"</span>: [<span class="token-string">"src/**/*"</span>],       <span class="token-comment">// 包含的文件</span>
+  <span class="token-string">"exclude"</span>: [<span class="token-string">"node_modules"</span>]   <span class="token-comment">// 排除的文件</span>
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">终端</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment"># 初始化 tsconfig.json</span>
+tsc --init
+
+<span class="token-comment"># 按 tsconfig 编译整个项目</span>
+tsc
+
+<span class="token-comment"># 监听模式：文件改动自动重新编译</span>
+tsc --watch</code></pre>
+        </div>
+      </section>
+
+      <!-- 第4章 -->
+      <section id="basic-types">
+        <h2>4. 基础类型</h2>
+        <p>TypeScript 内置了与 JavaScript 对应的基础类型，并增加了一些额外类型。</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>TS 类型</th><th>对应 JS 值</th><th>示例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>string</code></td><td>字符串</td><td><code>'hello'</code>, <code>`模板`</code></td></tr>
+            <tr><td><code>number</code></td><td>数字（含小数）</td><td><code>42</code>, <code>3.14</code>, <code>NaN</code></td></tr>
+            <tr><td><code>boolean</code></td><td>布尔值</td><td><code>true</code>, <code>false</code></td></tr>
+            <tr><td><code>null</code></td><td>空值</td><td><code>null</code></td></tr>
+            <tr><td><code>undefined</code></td><td>未定义</td><td><code>undefined</code></td></tr>
+            <tr><td><code>bigint</code></td><td>大整数</td><td><code>100n</code></td></tr>
+            <tr><td><code>symbol</code></td><td>唯一标识</td><td><code>Symbol('id')</code></td></tr>
+            <tr><td><code>any</code></td><td>任意类型（跳过检查）</td><td>尽量避免</td></tr>
+            <tr><td><code>unknown</code></td><td>未知类型（安全的 any）</td><td>需先检查再用</td></tr>
+            <tr><td><code>never</code></td><td>永不存在的值</td><td>抛出异常、无限循环</td></tr>
+            <tr><td><code>void</code></td><td>无返回值</td><td>函数不 return 时</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">let</span> name: <span class="token-keyword">string</span> = <span class="token-string">'张三'</span>;
+<span class="token-keyword">let</span> age: <span class="token-keyword">number</span> = <span class="token-number">25</span>;
+<span class="token-keyword">let</span> active: <span class="token-keyword">boolean</span> = <span class="token-keyword">true</span>;
+
+<span class="token-comment">// 数组</span>
+<span class="token-keyword">let</span> nums: <span class="token-keyword">number</span>[] = [<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>];
+<span class="token-keyword">let</span> names: <span class="token-keyword">Array</span>&lt;<span class="token-keyword">string</span>&gt; = [<span class="token-string">'a'</span>, <span class="token-string">'b'</span>];  <span class="token-comment">// 泛型写法，等价</span>
+
+<span class="token-comment">// 元组 tuple：固定长度和类型的数组</span>
+<span class="token-keyword">let</span> point: [<span class="token-keyword">number</span>, <span class="token-keyword">number</span>] = [<span class="token-number">10</span>, <span class="token-number">20</span>];
+<span class="token-keyword">let</span> userInfo: [<span class="token-keyword">string</span>, <span class="token-keyword">number</span>, <span class="token-keyword">boolean</span>] = [<span class="token-string">'小明'</span>, <span class="token-number">18</span>, <span class="token-keyword">true</span>];
+
+<span class="token-comment">// any — 关闭类型检查，尽量不用</span>
+<span class="token-keyword">let</span> anything: <span class="token-keyword">any</span> = <span class="token-number">1</span>;
+anything = <span class="token-string">'hello'</span>;  <span class="token-comment">// 不报错，但失去 TS 意义</span>
+
+<span class="token-comment">// unknown — 更安全的 any，使用前必须收窄类型</span>
+<span class="token-keyword">let</span> input: <span class="token-keyword">unknown</span> = getUserInput();
+<span class="token-keyword">if</span> (<span class="token-keyword">typeof</span> input === <span class="token-string">'string'</span>) {
+  console.log(input.toUpperCase());  <span class="token-comment">// ✅ 此时 TS 知道 input 是 string</span>
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- 第5章 -->
+      <section id="annotation">
+        <h2>5. 类型注解与类型推断</h2>
+
+        <h3>显式类型注解</h3>
+        <p>手动告诉 TS 变量/函数的类型：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">let</span> count: <span class="token-keyword">number</span> = <span class="token-number">0</span>;
+<span class="token-keyword">const</span> title: <span class="token-keyword">string</span> = <span class="token-string">'页面标题'</span>;</code></pre>
+        </div>
+
+        <h3>类型推断（Type Inference）</h3>
+        <p>TS 会根据初始值<strong>自动推断</strong>类型，很多情况下不必手写：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">let</span> message = <span class="token-string">'Hello'</span>;   <span class="token-comment">// TS 推断为 string</span>
+<span class="token-keyword">let</span> count = <span class="token-number">42</span>;           <span class="token-comment">// TS 推断为 number</span>
+<span class="token-keyword">let</span> isReady = <span class="token-keyword">true</span>;       <span class="token-comment">// TS 推断为 boolean</span>
+
+<span class="token-comment">// message = 123;  // ❌ 报错：不能将 number 赋给 string</span></code></pre>
+        </div>
+
+        <h3>何时需要显式注解？</h3>
+        <ul>
+          <li>声明变量时没有初始值：<code>let result: number;</code></li>
+          <li>函数参数和返回值（推断不够精确时）</li>
+          <li>函数返回值类型复杂，想作为文档说明</li>
+          <li>对象字面量需要约束结构时</li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <strong>💡 最佳实践</strong>
+          能推断就不手写。只在推断不准确或需要约束的地方加注解，保持代码简洁。
+        </div>
+      </section>
+
+      <!-- 第6章 -->
+      <section id="interface">
+        <h2>6. 接口（Interface）</h2>
+        <p>Interface 用来描述<strong>对象的结构</strong>——有哪些属性、什么类型。这是 TS 最常用的特性之一。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">interface</span> User {
+  id: <span class="token-keyword">number</span>;
+  name: <span class="token-keyword">string</span>;
+  email: <span class="token-keyword">string</span>;
+  age?: <span class="token-keyword">number</span>;          <span class="token-comment">// ? 表示可选属性</span>
+  readonly createdAt: <span class="token-keyword">Date</span>; <span class="token-comment">// readonly 不可修改</span>
+}
+
+<span class="token-keyword">const</span> user: User = {
+  id: <span class="token-number">1</span>,
+  name: <span class="token-string">'张三'</span>,
+  email: <span class="token-string">'zhangsan@example.com'</span>,
+  createdAt: <span class="token-keyword">new</span> Date(),
+};
+
+<span class="token-comment">// user.createdAt = new Date();  // ❌ 只读属性不能改</span>
+<span class="token-comment">// user.phone = '123';           // ❌ 接口未定义 phone 属性</span></code></pre>
+        </div>
+
+        <h3>接口描述函数</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">interface</span> SearchFunc {
+  (keyword: <span class="token-keyword">string</span>, page: <span class="token-keyword">number</span>): <span class="token-keyword">string</span>[];
+}
+
+<span class="token-keyword">const</span> search: SearchFunc = (keyword, page) =&gt; {
+  <span class="token-keyword">return</span> [<span class="token-string">`结果: ${keyword} 第${page}页`</span>];
+};</code></pre>
+        </div>
+
+        <h3>接口继承与扩展</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">interface</span> Animal {
+  name: <span class="token-keyword">string</span>;
+}
+
+<span class="token-keyword">interface</span> Dog <span class="token-keyword">extends</span> Animal {
+  breed: <span class="token-keyword">string</span>;
+  bark(): <span class="token-keyword">void</span>;
+}
+
+<span class="token-keyword">const</span> myDog: Dog = {
+  name: <span class="token-string">'旺财'</span>,
+  breed: <span class="token-string">'柴犬'</span>,
+  bark() { console.log(<span class="token-string">'汪汪!'</span>); },
+};</code></pre>
+        </div>
+      </section>
+
+      <!-- 第7章 -->
+      <section id="union-alias">
+        <h2>7. 联合类型与类型别名</h2>
+
+        <h3>联合类型（Union Types）</h3>
+        <p>值可以是多种类型之一，用 <code>|</code> 连接：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">let</span> id: <span class="token-keyword">string</span> | <span class="token-keyword">number</span>;
+id = <span class="token-string">'abc123'</span>;  <span class="token-comment">// ✅</span>
+id = <span class="token-number">123</span>;       <span class="token-comment">// ✅</span>
+<span class="token-comment">// id = true;   // ❌</span>
+
+<span class="token-keyword">function</span> <span class="token-function">printId</span>(id: <span class="token-keyword">string</span> | <span class="token-keyword">number</span>) {
+  <span class="token-keyword">if</span> (<span class="token-keyword">typeof</span> id === <span class="token-string">'string'</span>) {
+    console.log(id.toUpperCase());
+  } <span class="token-keyword">else</span> {
+    console.log(id.toFixed(<span class="token-number">2</span>));
+  }
+}</code></pre>
+        </div>
+
+        <h3>类型别名（Type Alias）</h3>
+        <p>用 <code>type</code> 给类型起名字，可描述联合类型、对象、函数等：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">type</span> ID = <span class="token-keyword">string</span> | <span class="token-keyword">number</span>;
+<span class="token-keyword">type</span> Status = <span class="token-string">'pending'</span> | <span class="token-string">'success'</span> | <span class="token-string">'error'</span>;  <span class="token-comment">// 字面量联合</span>
+
+<span class="token-keyword">type</span> Point = {
+  x: <span class="token-keyword">number</span>;
+  y: <span class="token-keyword">number</span>;
+};
+
+<span class="token-keyword">type</span> Callback = (data: <span class="token-keyword">string</span>) =&gt; <span class="token-keyword">void</span>;</code></pre>
+        </div>
+
+        <h3>interface vs type 怎么选？</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>场景</th><th>推荐</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>描述对象结构</td><td><code>interface</code>（可扩展、可继承）</td></tr>
+            <tr><td>联合类型、交叉类型</td><td><code>type</code></td></tr>
+            <tr><td>字面量类型</td><td><code>type</code></td></tr>
+            <tr><td>需要声明合并（同名接口自动合并）</td><td><code>interface</code></td></tr>
+            <tr><td>函数类型</td><td>两者均可，<code>type</code> 更简洁</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 第8章 -->
+      <section id="functions">
+        <h2>8. 函数类型</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 参数类型 + 返回值类型</span>
+<span class="token-keyword">function</span> <span class="token-function">greet</span>(name: <span class="token-keyword">string</span>): <span class="token-keyword">string</span> {
+  <span class="token-keyword">return</span> <span class="token-string">`你好，${name}！`</span>;
+}
+
+<span class="token-comment">// 箭头函数</span>
+<span class="token-keyword">const</span> multiply = (a: <span class="token-keyword">number</span>, b: <span class="token-keyword">number</span>): <span class="token-keyword">number</span> =&gt; a * b;
+
+<span class="token-comment">// 可选参数</span>
+<span class="token-keyword">function</span> <span class="token-function">buildName</span>(first: <span class="token-keyword">string</span>, last?: <span class="token-keyword">string</span>): <span class="token-keyword">string</span> {
+  <span class="token-keyword">return</span> last ? <span class="token-string">`${first} ${last}`</span> : first;
+}
+
+<span class="token-comment">// 默认参数（自动推断类型）</span>
+<span class="token-keyword">function</span> <span class="token-function">createUser</span>(name: <span class="token-keyword">string</span>, role = <span class="token-string">'user'</span>): <span class="token-keyword">void</span> {
+  console.log(name, role);
+}
+
+<span class="token-comment">// 剩余参数</span>
+<span class="token-keyword">function</span> <span class="token-function">sum</span>(...nums: <span class="token-keyword">number</span>[]): <span class="token-keyword">number</span> {
+  <span class="token-keyword">return</span> nums.reduce((a, b) =&gt; a + b, <span class="token-number">0</span>);
+}
+
+<span class="token-comment">// 函数类型作为参数</span>
+<span class="token-keyword">function</span> <span class="token-function">doTask</span>(callback: (result: <span class="token-keyword">string</span>) =&gt; <span class="token-keyword">void</span>) {
+  callback(<span class="token-string">'完成'</span>);
+}</code></pre>
+        </div>
+
+        <h3>函数重载（Overloads）</h3>
+        <p>同一函数根据不同参数类型返回不同结果：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">format</span>(value: <span class="token-keyword">string</span>): <span class="token-keyword">string</span>;
+<span class="token-keyword">function</span> <span class="token-function">format</span>(value: <span class="token-keyword">number</span>): <span class="token-keyword">string</span>;
+<span class="token-keyword">function</span> <span class="token-function">format</span>(value: <span class="token-keyword">string</span> | <span class="token-keyword">number</span>): <span class="token-keyword">string</span> {
+  <span class="token-keyword">return</span> <span class="token-keyword">typeof</span> value === <span class="token-string">'string'</span> ? value.trim() : value.toFixed(<span class="token-number">2</span>);
+}
+
+format(<span class="token-string">' hello '</span>);  <span class="token-comment">// 'hello'</span>
+format(<span class="token-number">3.1415</span>);     <span class="token-comment">// '3.14'</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第9章 -->
+      <section id="classes">
+        <h2>9. 类（Class）</h2>
+        <p>TS 的类比 JS 多了访问修饰符和更严格的类型检查。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">class</span> Animal {
+  <span class="token-comment">// 访问修饰符</span>
+  <span class="token-keyword">public</span> name: <span class="token-keyword">string</span>;       <span class="token-comment">// 公开（默认）</span>
+  <span class="token-keyword">private</span> age: <span class="token-keyword">number</span>;        <span class="token-comment">// 仅类内部访问</span>
+  <span class="token-keyword">protected</span> species: <span class="token-keyword">string</span>; <span class="token-comment">// 类及子类可访问</span>
+  readonly id: <span class="token-keyword">number</span>;       <span class="token-comment">// 只读</span>
+
+  <span class="token-keyword">constructor</span>(name: <span class="token-keyword">string</span>, age: <span class="token-keyword">number</span>, species: <span class="token-keyword">string</span>) {
+    <span class="token-keyword">this</span>.name = name;
+    <span class="token-keyword">this</span>.age = age;
+    <span class="token-keyword">this</span>.species = species;
+    <span class="token-keyword">this</span>.id = Math.random();
+  }
+
+  <span class="token-function">speak</span>(): <span class="token-keyword">void</span> {
+    console.log(<span class="token-string">`${this.name} 发出声音`</span>);
+  }
+}
+
+<span class="token-keyword">class</span> Dog <span class="token-keyword">extends</span> Animal {
+  <span class="token-keyword">constructor</span>(name: <span class="token-keyword">string</span>, age: <span class="token-keyword">number</span>, <span class="token-keyword">public</span> breed: <span class="token-keyword">string</span>) {
+    <span class="token-keyword">super</span>(name, age, <span class="token-string">'犬科'</span>);  <span class="token-comment">// 调用父类构造函数</span>
+  }
+
+  <span class="token-function">speak</span>(): <span class="token-keyword">void</span> {  <span class="token-comment">// 方法重写</span>
+    console.log(<span class="token-string">`${this.name} 说：汪汪！`</span>);
+  }
+}
+
+<span class="token-keyword">const</span> dog = <span class="token-keyword">new</span> Dog(<span class="token-string">'旺财'</span>, <span class="token-number">3</span>, <span class="token-string">'柴犬'</span>);
+dog.speak();
+<span class="token-comment">// dog.age;  // ❌ private 属性外部不可访问</span></code></pre>
+        </div>
+
+        <h3>实现接口</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">interface</span> Printable {
+  print(): <span class="token-keyword">void</span>;
+}
+
+<span class="token-keyword">class</span> Document <span class="token-keyword">implements</span> Printable {
+  <span class="token-function">print</span>(): <span class="token-keyword">void</span> {
+    console.log(<span class="token-string">'打印文档...'</span>);
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- 第10章 -->
+      <section id="generics">
+        <h2>10. 泛型（Generics）</h2>
+        <p>泛型让类型也能「参数化」，写一次代码适配多种类型，是 TS 最强大的特性之一。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 没有泛型：返回值是 any，丢失类型信息</span>
+<span class="token-keyword">function</span> <span class="token-function">getFirst</span>(arr: <span class="token-keyword">any</span>[]): <span class="token-keyword">any</span> {
+  <span class="token-keyword">return</span> arr[<span class="token-number">0</span>];
+}
+
+<span class="token-comment">// 有泛型：保留类型信息</span>
+<span class="token-keyword">function</span> <span class="token-function">getFirst</span>&lt;T&gt;(arr: T[]): T | <span class="token-keyword">undefined</span> {
+  <span class="token-keyword">return</span> arr[<span class="token-number">0</span>];
+}
+
+<span class="token-keyword">const</span> num = getFirst([<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>]);     <span class="token-comment">// number | undefined</span>
+<span class="token-keyword">const</span> str = getFirst([<span class="token-string">'a'</span>, <span class="token-string">'b'</span>]);  <span class="token-comment">// string | undefined</span>
+
+<span class="token-comment">// 泛型接口</span>
+<span class="token-keyword">interface</span> ApiResponse&lt;T&gt; {
+  code: <span class="token-keyword">number</span>;
+  message: <span class="token-keyword">string</span>;
+  data: T;
+}
+
+<span class="token-keyword">interface</span> User {
+  id: <span class="token-keyword">number</span>;
+  name: <span class="token-keyword">string</span>;
+}
+
+<span class="token-keyword">const</span> res: ApiResponse&lt;User&gt; = {
+  code: <span class="token-number">200</span>,
+  message: <span class="token-string">'ok'</span>,
+  data: { id: <span class="token-number">1</span>, name: <span class="token-string">'张三'</span> },
+};
+
+<span class="token-comment">// 泛型约束：T 必须有 length 属性</span>
+<span class="token-keyword">function</span> <span class="token-function">logLength</span>&lt;T <span class="token-keyword">extends</span> { length: <span class="token-keyword">number</span> }&gt;(item: T): <span class="token-keyword">void</span> {
+  console.log(item.length);
+}
+
+logLength(<span class="token-string">'hello'</span>);     <span class="token-comment">// ✅ string 有 length</span>
+logLength([<span class="token-number">1</span>, <span class="token-number">2</span>, <span class="token-number">3</span>]);  <span class="token-comment">// ✅ array 有 length</span>
+<span class="token-comment">// logLength(123);  // ❌ number 没有 length</span></code></pre>
+        </div>
+
+        <h3>常见泛型使用场景</h3>
+        <ul>
+          <li><code>Array&lt;T&gt;</code> / <code>T[]</code> — 数组</li>
+          <li><code>Promise&lt;T&gt;</code> — 异步返回值</li>
+          <li><code>Map&lt;K, V&gt;</code> / <code>Set&lt;T&gt;</code> — 集合</li>
+          <li><code>Record&lt;K, V&gt;</code> — 键值对对象</li>
+        </ul>
+      </section>
+
+      <!-- 第11章 -->
+      <section id="enum-literal">
+        <h2>11. 枚举与字面量类型</h2>
+
+        <h3>枚举（Enum）</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">// 数字枚举</span>
+<span class="token-keyword">enum</span> Direction {
+  Up,     <span class="token-comment">// 0</span>
+  Down,   <span class="token-comment">// 1</span>
+  Left,   <span class="token-comment">// 2</span>
+  Right,  <span class="token-comment">// 3</span>
+}
+
+<span class="token-keyword">let</span> dir: Direction = Direction.Up;
+
+<span class="token-comment">// 字符串枚举（更常用，可读性好）</span>
+<span class="token-keyword">enum</span> HttpStatus {
+  OK = <span class="token-string">'200'</span>,
+  NotFound = <span class="token-string">'404'</span>,
+  ServerError = <span class="token-string">'500'</span>,
+}</code></pre>
+        </div>
+
+        <h3>字面量类型</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">type</span> Theme = <span class="token-string">'light'</span> | <span class="token-string">'dark'</span>;
+<span class="token-keyword">type</span> Size = <span class="token-string">'sm'</span> | <span class="token-string">'md'</span> | <span class="token-string">'lg'</span>;
+
+<span class="token-keyword">function</span> <span class="token-function">setTheme</span>(theme: Theme) {
+  document.body.dataset.theme = theme;
+}
+
+setTheme(<span class="token-string">'dark'</span>);   <span class="token-comment">// ✅</span>
+<span class="token-comment">// setTheme('blue');  // ❌ 只能是 'light' 或 'dark'</span>
+
+<span class="token-comment">// as const 让值变成字面量类型</span>
+<span class="token-keyword">const</span> config = {
+  api: <span class="token-string">'https://api.example.com'</span>,
+  timeout: <span class="token-number">5000</span>,
+} <span class="token-keyword">as const</span>;
+<span class="token-comment">// config.api 的类型是 'https://api.example.com'，不是 string</span></code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+          <strong>💡 现代 TS 趋势</strong>
+          很多团队更倾向用 <code>type Status = 'pending' | 'done'</code> 代替 enum，因为 enum 会生成额外 JS 代码，而字面量联合类型编译后会被擦除。
+        </div>
+      </section>
+
+      <!-- 第12章 -->
+      <section id="narrowing">
+        <h2>12. 类型收窄（Type Narrowing）</h2>
+        <p>当变量是联合类型时，需要通过检查「收窄」到具体类型，TS 才能允许你使用该类型的方法。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">function</span> <span class="token-function">padLeft</span>(value: <span class="token-keyword">string</span>, padding: <span class="token-keyword">string</span> | <span class="token-keyword">number</span>) {
+  <span class="token-comment">// typeof 类型守卫</span>
+  <span class="token-keyword">if</span> (<span class="token-keyword">typeof</span> padding === <span class="token-string">'number'</span>) {
+    <span class="token-keyword">return</span> <span class="token-string">' '</span>.repeat(padding) + value;
+  }
+  <span class="token-keyword">return</span> padding + value;
+}
+
+<span class="token-comment">// instanceof 检查</span>
+<span class="token-keyword">function</span> <span class="token-function">logDate</span>(input: <span class="token-keyword">Date</span> | <span class="token-keyword">string</span>) {
+  <span class="token-keyword">if</span> (input <span class="token-keyword">instanceof</span> Date) {
+    console.log(input.toISOString());
+  } <span class="token-keyword">else</span> {
+    console.log(input.toUpperCase());
+  }
+}
+
+<span class="token-comment">// in 操作符</span>
+<span class="token-keyword">type</span> Cat = { meow(): <span class="token-keyword">void</span> };
+<span class="token-keyword">type</span> Dog = { bark(): <span class="token-keyword">void</span> };
+
+<span class="token-keyword">function</span> <span class="token-function">speak</span>(animal: Cat | Dog) {
+  <span class="token-keyword">if</span> (<span class="token-string">'meow'</span> <span class="token-keyword">in</span> animal) {
+    animal.meow();
+  } <span class="token-keyword">else</span> {
+    animal.bark();
+  }
+}
+
+<span class="token-comment">// 自定义类型守卫</span>
+<span class="token-keyword">function</span> <span class="token-function">isString</span>(value: <span class="token-keyword">unknown</span>): value <span class="token-keyword">is</span> <span class="token-keyword">string</span> {
+  <span class="token-keyword">return</span> <span class="token-keyword">typeof</span> value === <span class="token-string">'string'</span>;
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- 第13章 -->
+      <section id="modules">
+        <h2>13. 模块与 tsconfig</h2>
+
+        <h3>ES Module 导入导出</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">utils.ts</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-function">add</span>(a: <span class="token-keyword">number</span>, b: <span class="token-keyword">number</span>): <span class="token-keyword">number</span> {
+  <span class="token-keyword">return</span> a + b;
+}
+
+<span class="token-keyword">export</span> <span class="token-keyword">const</span> PI = <span class="token-number">3.14</span>;
+
+<span class="token-keyword">export</span> <span class="token-keyword">default</span> <span class="token-keyword">function</span> <span class="token-function">greet</span>(name: <span class="token-keyword">string</span>) {
+  <span class="token-keyword">return</span> <span class="token-string">`Hello, ${name}`</span>;
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">main.ts</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> greet, { add, PI } <span class="token-keyword">from</span> <span class="token-string">'./utils'</span>;
+
+console.log(greet(<span class="token-string">'TS'</span>));
+console.log(add(<span class="token-number">1</span>, <span class="token-number">2</span>));
+console.log(PI);</code></pre>
+        </div>
+
+        <h3>重要 tsconfig 选项说明</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>选项</th><th>作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>strict</code></td><td>开启全部严格模式（强烈推荐）</td></tr>
+            <tr><td><code>noImplicitAny</code></td><td>禁止隐式 any 类型</td></tr>
+            <tr><td><code>strictNullChecks</code></td><td>null/undefined 不能赋给其他类型</td></tr>
+            <tr><td><code>target</code></td><td>编译输出的 JS 版本</td></tr>
+            <tr><td><code>module</code></td><td>模块系统（ESNext / CommonJS）</td></tr>
+            <tr><td><code>paths</code></td><td>路径别名，如 <code>@/*</code> → <code>src/*</code></td></tr>
+            <tr><td><code>declaration</code></td><td>生成 .d.ts 类型声明文件</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 第14章 -->
+      <section id="utility">
+        <h2>14. 常用工具类型</h2>
+        <p>TypeScript 内置了许多工具类型，用于变换已有类型：</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">TypeScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">interface</span> User {
+  id: <span class="token-keyword">number</span>;
+  name: <span class="token-keyword">string</span>;
+  email: <span class="token-keyword">string</span>;
+  age: <span class="token-keyword">number</span>;
+}
+
+<span class="token-comment">// Partial&lt;T&gt; — 所有属性变可选</span>
+<span class="token-keyword">type</span> PartialUser = Partial&lt;User&gt;;
+<span class="token-comment">// { id?: number; name?: string; email?: string; age?: number }</span>
+
+<span class="token-comment">// Required&lt;T&gt; — 所有属性变必填</span>
+<span class="token-keyword">type</span> RequiredUser = Required&lt;PartialUser&gt;;
+
+<span class="token-comment">// Pick&lt;T, K&gt; — 选取部分属性</span>
+<span class="token-keyword">type</span> UserBrief = Pick&lt;User, <span class="token-string">'id'</span> | <span class="token-string">'name'</span>&gt;;
+<span class="token-comment">// { id: number; name: string }</span>
+
+<span class="token-comment">// Omit&lt;T, K&gt; — 排除部分属性</span>
+<span class="token-keyword">type</span> UserWithoutEmail = Omit&lt;User, <span class="token-string">'email'</span>&gt;;
+
+<span class="token-comment">// Record&lt;K, V&gt; — 构造键值对类型</span>
+<span class="token-keyword">type</span> RolePermissions = Record&lt;<span class="token-string">'admin'</span> | <span class="token-string">'user'</span>, <span class="token-keyword">string</span>[]&gt;;
+
+<span class="token-comment">// Readonly&lt;T&gt; — 所有属性变只读</span>
+<span class="token-keyword">type</span> ReadonlyUser = Readonly&lt;User&gt;;</code></pre>
+        </div>
+      </section>
+
+      <!-- 第15章 -->
+      <section id="best-practices">
+        <h2>15. 最佳实践</h2>
+
+        <h3>✅ 推荐做法</h3>
+        <ul>
+          <li>开启 <code>"strict": true</code></li>
+          <li>优先用 <code>interface</code> 描述对象，用 <code>type</code> 描述联合/交叉类型</li>
+          <li>避免 <code>any</code>，用 <code>unknown</code> 代替需要后续收窄的场景</li>
+          <li>让 TS 推断简单类型，只在必要处手写注解</li>
+          <li>用字面量联合类型代替 magic string</li>
+          <li>给公共 API（导出函数、组件 props）写明确类型</li>
+          <li>使用 ESLint + TypeScript 插件保持代码质量</li>
+        </ul>
+
+        <h3>❌ 避免的做法</h3>
+        <ul>
+          <li>到处用 <code>as any</code> 绕过类型检查</li>
+          <li>过度注解（每个变量都写类型，代码冗余）</li>
+          <li>不开启 strict 模式（会错过 TS 的核心价值）</li>
+          <li>没学 JS 就直接学 TS（基础不牢）</li>
+        </ul>
+
+        <h3>学习路线建议</h3>
+        <ol>
+          <li>掌握 JavaScript ES6+ 基础</li>
+          <li>理解 TS 基础类型和 interface</li>
+          <li>在现有 JS 项目中尝试把文件改为 .ts</li>
+          <li>学习泛型和工具类型</li>
+          <li>用 TS 做一个 React 或 Node 小项目</li>
+        </ol>
+
+        <div class="callout callout-note">
+          <strong>🎉 恭喜完成全部教程！</strong>
+          你已经掌握了 HTML、CSS、JavaScript 和 TypeScript 的基础。接下来可以：
+          <ul style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li>用 TS 重写之前的 JS 练习</li>
+            <li>创建一个 React + TypeScript 项目</li>
+            <li>阅读官方文档：<a href="https://www.typescriptlang.org/zh/docs/" target="_blank" rel="noopener">typescriptlang.org</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="chapter-nav">
+        <a href="javascript.html">
+          <span class="nav-label">← 上一章</span>
+          <span class="nav-title">JavaScript 基础教程</span>
+        </a>
+        <a href="../index.html" class="next">
+          <span class="nav-label">完成 →</span>
+          <span class="nav-title">返回首页</span>
+        </a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>前端基础教程 · TypeScript 章节</p>
+  </footer>
+
+  <script src="../js/tutorial.js"></script>
+</body>
+
+</html>
