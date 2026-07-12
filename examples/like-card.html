@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<!--
+  ============================================================
+  三合一入门示例：HTML + CSS + JavaScript
+  ============================================================
+  功能：点击「点赞」按钮，数字 +1，卡片变色，按钮文字改变
+
+  三者分工：
+    HTML  → 页面结构（有什么元素）
+    CSS   → 外观样式（长什么样）
+    JS    → 交互逻辑（点击后发生什么）
+
+  使用方法：用浏览器直接打开这个文件即可
+  ============================================================
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>三合一示例 - 点赞卡片</title>
+
+  <!-- ==================== CSS 部分：控制外观 ==================== -->
+  <style>
+    /* 全局：页面居中、背景色 */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: #f1f5f9;
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
+
+    /* 顶部说明文字 */
+    .tip {
+      max-width: 420px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .tip a {
+      color: #2563eb;
+    }
+
+    /* 卡片容器 —— 对应 HTML 里的 <div class="card"> */
+    .card {
+      width: 320px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: background 0.3s, transform 0.2s; /* 颜色变化有过渡动画 */
+    }
+
+    /* .liked 是一个「状态类」—— 默认没有，JS 点击后会添加上去 */
+    .card.liked {
+      background: #fef2f2;           /* 点赞后背景变粉红 */
+      transform: scale(1.02);        /* 微微放大 */
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card h2 {
+      margin: 0 0 0.5rem;
+      color: #1e293b;
+      font-size: 1.375rem;
+    }
+
+    .card p {
+      margin: 0 0 1.25rem;
+      color: #64748b;
+      font-size: 0.9375rem;
+    }
+
+    /* 点赞数字 */
+    .like-count {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #2563eb;
+      margin-bottom: 1.25rem;
+      transition: color 0.3s;
+    }
+
+    .card.liked .like-count {
+      color: #dc2626;  /* 点赞后数字变红 */
+    }
+
+    /* 按钮样式 */
+    .btn {
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.96);  /* 按下时缩小，有按压感 */
+    }
+
+    /* 点赞按钮 —— 对应 id="likeBtn" */
+    #likeBtn {
+      background: #2563eb;
+      color: white;
+    }
+
+    #likeBtn:hover {
+      background: #1d4ed8;
+    }
+
+    /* JS 添加 .liked 类后，按钮也跟着变 */
+    .card.liked #likeBtn {
+      background: #dc2626;
+    }
+
+    /* 重置按钮 */
+    #resetBtn {
+      background: #e2e8f0;
+      color: #475569;
+      margin-top: 0.75rem;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.875rem;
+    }
+
+    #resetBtn:hover {
+      background: #cbd5e1;
+    }
+
+    /* 底部代码说明面板 */
+    .explain {
+      max-width: 520px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+    }
+
+    .explain h3 {
+      margin: 0 0 0.75rem;
+      color: #7dd3fc;
+      font-size: 0.9375rem;
+    }
+
+    .explain ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .explain li {
+      margin-bottom: 0.375rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.1em 0.45em;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .tag-html { background: #fef3c7; color: #92400e; }
+    .tag-css  { background: #dbeafe; color: #1e40af; }
+    .tag-js   { background: #d1fae5; color: #065f46; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==================== HTML 部分：页面结构 ==================== -->
+  <!--
+    下面每个元素都有 id 或 class，方便 CSS 选样式、JS 选元素
+    id  用 # 选择，如 #likeBtn
+    class 用 . 选择，如 .card
+  -->
+
+  <p class="tip">
+    这是一个 HTML + CSS + JS 写在一起的入门示例。<br>
+    打开编辑器看源码，按 F12 观察 DOM 变化。<br>
+    <a href="../index.html">← 返回教程首页</a>
+  </p>
+
+  <!-- 卡片：点赞功能的主体 -->
+  <div class="card" id="card">
+    <div class="card-icon">👍</div>
+    <h2>给这个示例点赞</h2>
+    <p>点击下方按钮，看看页面会发生什么变化</p>
+
+    <!-- 显示点赞次数，JS 会修改这里的数字 -->
+    <div class="like-count" id="likeCount">0</div>
+
+    <!-- 点赞按钮，JS 会监听它的点击事件 -->
+    <button class="btn" id="likeBtn" type="button">点赞 👍</button>
+    <br>
+    <button class="btn" id="resetBtn" type="button">重置</button>
+  </div>
+
+  <!-- 页面内的流程说明，帮你看懂三者怎么配合 -->
+  <div class="explain">
+    <h3>点击「点赞」后发生了什么？</h3>
+    <ol>
+      <li><span class="tag tag-html">HTML</span> 提供了 <code>#likeBtn</code> 按钮和 <code>#likeCount</code> 数字等元素</li>
+      <li><span class="tag tag-js">JS</span> 监听到按钮被点击 → 把计数 +1 → 修改数字文字 → 给卡片加上 <code>liked</code> 类</li>
+      <li><span class="tag tag-css">CSS</span> 检测到 <code>.card.liked</code> → 自动切换背景色、数字颜色、按钮颜色</li>
+    </ol>
+  </div>
+
+  <!-- ==================== JavaScript 部分：交互逻辑 ==================== -->
+  <script>
+    /*
+     * 第一步：用 DOM API 找到 HTML 中的元素（在树上定位节点）
+     * document 是整棵 DOM 树的入口
+     * querySelector('#xxx') 按 id 查找元素
+     */
+    const card      = document.querySelector('#card');       // 卡片容器
+    const likeCount = document.querySelector('#likeCount');   // 数字显示
+    const likeBtn   = document.querySelector('#likeBtn');    // 点赞按钮
+    const resetBtn  = document.querySelector('#resetBtn');    // 重置按钮
+
+    /*
+     * 第二步：准备一个变量记录当前点赞数
+     * 这是 JS 的「数据」，页面上看不到，但在内存里维护着
+     */
+    let count = 0;
+
+    /*
+     * 第三步：定义一个函数 —— 把 count 的值同步到页面上
+     * 这样每次 count 变化，只需调用这个函数就能更新显示
+     */
+    function updateDisplay() {
+      likeCount.textContent = count;  // 修改 DOM 文本节点 → 页面数字跟着变
+
+      if (count > 0) {
+        card.classList.add('liked');           // 给卡片加 CSS 类 → 样式自动变
+        likeBtn.textContent = '已点赞 ❤️';      // 改按钮文字
+      } else {
+        card.classList.remove('liked');        // 移除 CSS 类 → 恢复默认样式
+        likeBtn.textContent = '点赞 👍';
+      }
+    }
+
+    /*
+     * 第四步：给按钮绑定「点击事件」
+     * 用户点击 → 浏览器触发 click 事件 → 执行我们的函数
+     */
+    likeBtn.addEventListener('click', function () {
+      count = count + 1;   // 数据 +1
+      updateDisplay();     // 同步到页面（DOM + CSS 类）
+    });
+
+    resetBtn.addEventListener('click', function () {
+      count = 0;           // 数据归零
+      updateDisplay();     // 页面恢复初始状态
+    });
+
+    /*
+     * 总结这个例子的数据流：
+     *
+     *   用户点击按钮
+     *        ↓
+     *   JS 修改 count 变量（数据层）
+     *        ↓
+     *   JS 修改 DOM（textContent、classList）（视图层）
+     *        ↓
+     *   CSS 根据 .liked 类自动换样式（样式层）
+     *        ↓
+     *   用户看到变化
+     */
+  </script>
+
+</body>
+</html>

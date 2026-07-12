@@ -31,6 +31,37 @@
     }
     .js-demo-btn:hover { background: var(--color-primary-dark); }
     .js-counter { font-size: 2rem; font-weight: 700; color: var(--color-primary); }
+    .dom-tree-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.75;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      box-shadow: var(--shadow);
+    }
+    .dom-tree-box .tree-comment { color: #64748b; }
+    .dom-tree-box .tree-elem { color: #7dd3fc; }
+    .dom-tree-box .tree-text { color: #86efac; }
+    .dom-tree-box .tree-attr { color: #fcd34d; }
+    .dom-tree-box .tree-doc { color: #c4b5fd; font-weight: 600; }
+    .dom-rel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .dom-rel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .dom-rel-card h4 { margin: 0 0 0.5rem; font-size: 0.9375rem; color: var(--color-primary); }
+    .dom-rel-card p { margin: 0; font-size: 0.875rem; color: var(--color-text-muted); }
   </style>
 </head>
 
@@ -67,6 +98,8 @@
         <li><a href="#functions-callback" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 回调与高阶函数</a></li>
         <li><a href="#arrays-objects">数组与对象</a></li>
         <li><a href="#dom">DOM 操作</a></li>
+        <li><a href="#dom-concept" style="padding-left:1.25rem;font-size:0.8125rem;">↳ DOM 是什么</a></li>
+        <li><a href="#dom-tree" style="padding-left:1.25rem;font-size:0.8125rem;">↳ DOM 树详解</a></li>
         <li><a href="#dom-select" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 选择与修改</a></li>
         <li><a href="#dom-create" style="padding-left:1.25rem;font-size:0.8125rem;">↳ 创建与遍历</a></li>
         <li><a href="#events">事件处理</a></li>
@@ -671,36 +704,267 @@ Object.values(user);  <span class="token-comment">// ['张三', 25, '北京', fu
       <!-- 第9章 -->
       <section id="dom">
         <h2>9. DOM 操作</h2>
-        <p>DOM（Document Object Model，文档对象模型）是浏览器把 HTML 解析成的<strong>树形结构</strong>。每个 HTML 标签对应树中的一个<strong>节点（node）</strong>，JavaScript 可以通过 DOM API 查找、修改、创建和删除这些节点，从而动态改变页面。</p>
+        <p>这一章是前端交互的核心：学会用 JavaScript 操作页面上的 HTML 元素。而要做到这一点，必须先理解 <strong>DOM 是什么</strong>。</p>
 
-        <h3>DOM 树结构</h3>
-        <p>浏览器加载 HTML 后，会构建如下层级关系：</p>
-        <div style="background:#f1f5f9;padding:1.25rem;border-radius:8px;font-family:monospace;font-size:0.875rem;line-height:1.8;margin:1rem 0;">
-          document<br>
-          └── html<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;├── head<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── title<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── meta<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;└── body<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── h1<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── p<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── div#app<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── button
-        </div>
+        <h3 id="dom-concept">先理解：DOM 到底是什么？</h3>
+        <p><strong>DOM</strong>（Document Object Model，<strong>文档对象模型</strong>）是浏览器读取 HTML 文件后，在内存里构建的一棵<strong>树形结构</strong>。树上的每一个节点，都对应 HTML 里的某个部分。</p>
+
+        <p>可以这么理解三者关系：</p>
         <ul>
-          <li><code>document</code>：整个页面的入口对象，代表 HTML 文档本身</li>
-          <li><strong>元素节点</strong>：如 <code>&lt;div&gt;</code>、<code>&lt;p&gt;</code></li>
-          <li><strong>文本节点</strong>：标签内的文字内容</li>
-          <li><strong>属性</strong>：如 <code>id</code>、<code>class</code>、<code>href</code></li>
+          <li><strong>HTML 文件</strong>：磁盘上的文本，是「设计图纸」</li>
+          <li><strong>DOM 树</strong>：浏览器把 HTML 解析后在内存里的「活的对象结构」</li>
+          <li><strong>你看到的网页</strong>：浏览器根据 DOM 树 + CSS 渲染出来的最终画面</li>
         </ul>
 
         <div class="callout callout-note">
-          <strong>📝 打开 DevTools 查看 DOM</strong>
-          按 F12 → Elements 面板，就能看到实时的 DOM 树。你在 JS 里做的修改会立刻反映在这里。
+          <strong>🔑 关键理解</strong>
+          JavaScript <strong>不能直接修改 .html 源文件</strong>，但可以修改内存中的 DOM 树。DOM 一变，页面显示就会跟着变——这就是网页能「动起来」的根本原因。
         </div>
 
-        <h3 id="dom-select">选择元素</h3>
-        <p>操作 DOM 的第一步是「找到目标元素」。现代开发推荐优先使用 <code>querySelector</code> 系列。</p>
+        <h4>HTML、CSS、JavaScript 与 DOM 的分工</h4>
+        <table class="data-table">
+          <thead>
+            <tr><th>技术</th><th>职责</th><th>与 DOM 的关系</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HTML</td>
+              <td>定义页面<strong>结构</strong>（有什么元素）</td>
+              <td>提供 DOM 树的<strong>初始内容</strong></td>
+            </tr>
+            <tr>
+              <td>CSS</td>
+              <td>定义页面<strong>外观</strong>（长什么样）</td>
+              <td>不修改 DOM 结构，只影响<strong>渲染样式</strong></td>
+            </tr>
+            <tr>
+              <td>JavaScript</td>
+              <td>定义页面<strong>行为</strong>（怎么交互）</td>
+              <td>通过 DOM API <strong>增删改查</strong>节点，动态改变页面</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>打个比方：HTML 是房子的框架，CSS 是装修，JavaScript 是智能家居系统——而 <strong>DOM 就是那套可以被 JS 控制的「房屋结构模型」</strong>，JS 通过它开关灯、开门窗、添家具。</p>
+
+        <h4>一个最小例子：JS 如何改变页面</h4>
+        <p>HTML 里写了：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;p</span> <span class="token-attr">id</span>=<span class="token-string">"msg"</span><span class="token-tag">&gt;</span>原始文字<span class="token-tag">&lt;/p&gt;</span></code></pre>
+        </div>
+        <p>JavaScript 通过 DOM 找到这个节点并修改：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> msg = document.querySelector(<span class="token-string">'#msg'</span>);  <span class="token-comment">// 在 DOM 树中找到节点</span>
+msg.textContent = <span class="token-string">'文字已被 JS 修改了'</span>;            <span class="token-comment">// 修改节点内容</span></code></pre>
+        </div>
+        <p>用户看到的文字变了，但磁盘上的 <code>.html</code> 文件并没有变——变的是浏览器内存里的 DOM 树。</p>
+
+        <h3 id="dom-tree">DOM 树详解：从 HTML 到树</h3>
+        <p>下面是一份完整的 HTML 页面。浏览器加载它之后，会把每个标签、每段文字都变成树上的节点。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;!doctype html&gt;</span>
+<span class="token-tag">&lt;html</span> <span class="token-attr">lang</span>=<span class="token-string">"zh-CN"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;head&gt;</span>
+  <span class="token-tag">&lt;meta</span> <span class="token-attr">charset</span>=<span class="token-string">"utf-8"</span><span class="token-tag">&gt;</span>
+  <span class="token-tag">&lt;title&gt;</span>我的网页<span class="token-tag">&lt;/title&gt;</span>
+  <span class="token-tag">&lt;link</span> <span class="token-attr">rel</span>=<span class="token-string">"stylesheet"</span> <span class="token-attr">href</span>=<span class="token-string">"style.css"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;/head&gt;</span>
+<span class="token-tag">&lt;body&gt;</span>
+  <span class="token-tag">&lt;header</span> <span class="token-attr">id</span>=<span class="token-string">"header"</span><span class="token-tag">&gt;</span>
+    <span class="token-tag">&lt;h1&gt;</span>欢迎访问<span class="token-tag">&lt;/h1&gt;</span>
+    <span class="token-tag">&lt;nav&gt;</span>
+      <span class="token-tag">&lt;a</span> <span class="token-attr">href</span>=<span class="token-string">"/"</span><span class="token-tag">&gt;</span>首页<span class="token-tag">&lt;/a&gt;</span>
+      <span class="token-tag">&lt;a</span> <span class="token-attr">href</span>=<span class="token-string">"/about"</span><span class="token-tag">&gt;</span>关于<span class="token-tag">&lt;/a&gt;</span>
+    <span class="token-tag">&lt;/nav&gt;</span>
+  <span class="token-tag">&lt;/header&gt;</span>
+  <span class="token-tag">&lt;main</span> <span class="token-attr">class</span>=<span class="token-string">"content"</span><span class="token-tag">&gt;</span>
+    <span class="token-tag">&lt;p&gt;</span>这是一段正文。<span class="token-tag">&lt;/p&gt;</span>
+    <span class="token-tag">&lt;ul</span> <span class="token-attr">id</span>=<span class="token-string">"list"</span><span class="token-tag">&gt;</span>
+      <span class="token-tag">&lt;li&gt;</span>项目 A<span class="token-tag">&lt;/li&gt;</span>
+      <span class="token-tag">&lt;li&gt;</span>项目 B<span class="token-tag">&lt;/li&gt;</span>
+    <span class="token-tag">&lt;/ul&gt;</span>
+    <span class="token-tag">&lt;button</span> <span class="token-attr">id</span>=<span class="token-string">"btn"</span><span class="token-tag">&gt;</span>点击我<span class="token-tag">&lt;/button&gt;</span>
+  <span class="token-tag">&lt;/main&gt;</span>
+  <span class="token-tag">&lt;footer&gt;</span>
+    <span class="token-tag">&lt;p&gt;</span>© 2026 我的网站<span class="token-tag">&lt;/p&gt;</span>
+  <span class="token-tag">&lt;/footer&gt;</span>
+  <span class="token-tag">&lt;script</span> <span class="token-attr">src</span>=<span class="token-string">"app.js"</span><span class="token-tag">&gt;&lt;/script&gt;</span>
+<span class="token-tag">&lt;/body&gt;</span>
+<span class="token-tag">&lt;/html&gt;</span></code></pre>
+        </div>
+
+        <p>浏览器解析后，生成的 DOM 树如下（<span class="tree-elem" style="color:#7dd3fc;">蓝色</span> = 元素节点，<span class="tree-text" style="color:#86efac;">绿色</span> = 文本节点，<span class="tree-attr" style="color:#fcd34d;">黄色</span> = 属性）：</p>
+
+        <div class="dom-tree-box">
+<span class="tree-doc">Document</span>  <span class="tree-comment">← 整个文档的根，JS 通过 document 对象访问</span>
+└── <span class="tree-elem">html</span>  <span class="tree-attr">[lang="zh-CN"]</span>
+    ├── <span class="tree-elem">head</span>
+    │   ├── <span class="tree-elem">meta</span>  <span class="tree-attr">[charset="utf-8"]</span>  <span class="tree-comment">← 自闭合标签也是元素节点</span>
+    │   ├── <span class="tree-elem">title</span>
+    │   │   └── <span class="tree-text">#text: "我的网页"</span>  <span class="tree-comment">← 标签内的文字是文本节点</span>
+    │   └── <span class="tree-elem">link</span>  <span class="tree-attr">[rel="stylesheet"] [href="style.css"]</span>
+    │
+    └── <span class="tree-elem">body</span>
+        ├── <span class="tree-elem">header</span>  <span class="tree-attr">[id="header"]</span>
+        │   ├── <span class="tree-elem">h1</span>
+        │   │   └── <span class="tree-text">#text: "欢迎访问"</span>
+        │   └── <span class="tree-elem">nav</span>
+        │       ├── <span class="tree-elem">a</span>  <span class="tree-attr">[href="/"]</span>
+        │       │   └── <span class="tree-text">#text: "首页"</span>
+        │       └── <span class="tree-elem">a</span>  <span class="tree-attr">[href="/about"]</span>
+        │           └── <span class="tree-text">#text: "关于"</span>
+        │
+        ├── <span class="tree-elem">main</span>  <span class="tree-attr">[class="content"]</span>
+        │   ├── <span class="tree-elem">p</span>
+        │   │   └── <span class="tree-text">#text: "这是一段正文。"</span>
+        │   ├── <span class="tree-elem">ul</span>  <span class="tree-attr">[id="list"]</span>
+        │   │   ├── <span class="tree-elem">li</span>
+        │   │   │   └── <span class="tree-text">#text: "项目 A"</span>
+        │   │   └── <span class="tree-elem">li</span>
+        │   │       └── <span class="tree-text">#text: "项目 B"</span>
+        │   └── <span class="tree-elem">button</span>  <span class="tree-attr">[id="btn"]</span>
+        │       └── <span class="tree-text">#text: "点击我"</span>
+        │
+        ├── <span class="tree-elem">footer</span>
+        │   └── <span class="tree-elem">p</span>
+        │       └── <span class="tree-text">#text: "© 2026 我的网站"</span>
+        │
+        └── <span class="tree-elem">script</span>  <span class="tree-attr">[src="app.js"]</span>
+        </div>
+
+        <h4>节点有哪些类型？</h4>
+        <table class="data-table">
+          <thead>
+            <tr><th>节点类型</th><th>是什么</th><th>举例</th><th>JS 中常见吗</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Document</strong></td>
+              <td>整份文档的根节点</td>
+              <td><code>document</code></td>
+              <td>✅ 入口，必用</td>
+            </tr>
+            <tr>
+              <td><strong>Element</strong><br>元素节点</td>
+              <td>HTML 标签</td>
+              <td><code>&lt;div&gt;</code>、<code>&lt;p&gt;</code>、<code>&lt;button&gt;</code></td>
+              <td>✅ 最常操作</td>
+            </tr>
+            <tr>
+              <td><strong>Text</strong><br>文本节点</td>
+              <td>标签内的文字</td>
+              <td><code>"欢迎访问"</code>、<code>"点击我"</code></td>
+              <td>✅ 通过 textContent 操作</td>
+            </tr>
+            <tr>
+              <td><strong>Attribute</strong><br>属性</td>
+              <td>标签上的特性</td>
+              <td><code>id="btn"</code>、<code>class="content"</code></td>
+              <td>✅ 通过 get/setAttribute</td>
+            </tr>
+            <tr>
+              <td><strong>Comment</strong><br>注释节点</td>
+              <td>HTML 注释</td>
+              <td><code>&lt;!-- 注释 --&gt;</code></td>
+              <td>较少直接操作</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-tip">
+          <strong>💡 注意区分</strong>
+          我们日常说「操作 DOM」时，90% 以上是在操作 <strong>Element 元素节点</strong>。文本节点和属性是元素的附属部分，通过元素的 API 间接操作。
+        </div>
+
+        <h4>树中的关系术语</h4>
+        <p>DOM 是一棵树，节点之间有明确的父子、兄弟关系。这些术语在写 JS 时会经常用到：</p>
+
+        <div class="dom-rel-grid">
+          <div class="dom-rel-card">
+            <h4>父节点 / 子节点</h4>
+            <p><code>body</code> 是 <code>header</code> 的<strong>父节点</strong>，<code>header</code> 是 <code>body</code> 的<strong>子节点</strong>。直接包含的关系叫「父子」。</p>
+          </div>
+          <div class="dom-rel-card">
+            <h4>兄弟节点</h4>
+            <p><code>header</code>、<code>main</code>、<code>footer</code> 同属于 <code>body</code>，它们互为<strong>兄弟节点</strong>（同级）。</p>
+          </div>
+          <div class="dom-rel-card">
+            <h4>祖先 / 后代</h4>
+            <p><code>body</code> 是 <code>button#btn</code> 的<strong>祖先</strong>，<code>button</code> 是 <code>body</code> 的<strong>后代</strong>。不限层级，隔代也算。</p>
+          </div>
+          <div class="dom-rel-card">
+            <h4>根节点</h4>
+            <p><code>document</code> 是整棵树的<strong>根</strong>。所有节点最终都能追溯到 document。</p>
+          </div>
+        </div>
+
+        <p>以上面那棵树为例，看 <code>button#btn</code> 这个节点：</p>
+        <ul>
+          <li><strong>父节点</strong>：<code>main.content</code></li>
+          <li><strong>子节点</strong>：文本节点 <code>"点击我"</code></li>
+          <li><strong>兄弟节点</strong>：<code>p</code>、<code>ul#list</code>（同在 main 下）</li>
+          <li><strong>祖先节点</strong>：<code>main</code> → <code>body</code> → <code>html</code> → <code>document</code></li>
+        </ul>
+
+        <h4>DOM 操作本质上在做什么？</h4>
+        <p>理解了树结构之后，后面所有 DOM API 都可以归结为对树的四种操作：</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>操作</th><th>含义</th><th>典型 API</th><th>类比</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>查</strong></td>
+              <td>在树中找到目标节点</td>
+              <td><code>querySelector</code>、<code>getElementById</code></td>
+              <td>在树上找到某根树枝</td>
+            </tr>
+            <tr>
+              <td><strong>改</strong></td>
+              <td>修改节点内容、属性或样式</td>
+              <td><code>textContent</code>、<code>classList</code>、<code>setAttribute</code></td>
+              <td>改树枝上的标签和内容</td>
+            </tr>
+            <tr>
+              <td><strong>增</strong></td>
+              <td>创建新节点并挂到树上</td>
+              <td><code>createElement</code>、<code>appendChild</code></td>
+              <td>长出一根新树枝</td>
+            </tr>
+            <tr>
+              <td><strong>删</strong></td>
+              <td>从树上移除节点</td>
+              <td><code>remove</code>、<code>removeChild</code></td>
+              <td>砍掉一根树枝</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>下面几节就分别讲这四种操作的具体用法。</p>
+
+        <div class="callout callout-note">
+          <strong>📝 动手验证：在 DevTools 里看 DOM 树</strong>
+          <ol style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li>按 <code>F12</code> 打开开发者工具</li>
+            <li>切到 <strong>Elements（元素）</strong> 面板</li>
+            <li>左侧就是实时的 DOM 树，点击节点可以展开/折叠</li>
+            <li>在 Console 里输入 <code>document.querySelector('#btn')</code>，可以看到对应的 DOM 对象</li>
+            <li>用 JS 修改 DOM 后，Elements 面板会<strong>立刻同步更新</strong></li>
+          </ol>
+        </div>
+
+        <div class="callout callout-tip">
+          <strong>🧪 动手试试</strong>
+          我们准备了一个<strong>三合一入门示例</strong>：一个 HTML 文件里同时写了 CSS 和 JS，实现点赞功能，源码有详细中文注释。
+          <a href="../examples/like-card.html" target="_blank">点击打开「点赞卡片」示例 →</a>
+        </div>
+
+        <h3 id="dom-select">选择元素（查）</h3>
+        <p>操作 DOM 的第一步是「在树中找到目标节点」。现代开发推荐优先使用 <code>querySelector</code> 系列。</p>
 
         <table class="data-table">
           <thead>
@@ -763,7 +1027,7 @@ allItems.forEach(item =&gt; {
           <code>if (btn) { btn.addEventListener(...) }</code>
         </div>
 
-        <h3>修改内容和属性</h3>
+        <h3>修改内容和属性（改）</h3>
         <h4>textContent vs innerHTML vs innerText</h4>
         <table class="data-table">
           <thead>
@@ -845,7 +1109,7 @@ title.classList.replace(<span class="token-string">'old'</span>, <span class="to
 styles.fontSize;  <span class="token-comment">// 如 '32px'</span></code></pre>
         </div>
 
-        <h3 id="dom-create">创建、插入与删除元素</h3>
+        <h3 id="dom-create">创建、插入与删除元素（增 / 删）</h3>
         <p>动态内容（待办列表、评论、弹窗等）都需要用 JS 创建新元素并插入 DOM。</p>
 
         <div class="code-block">
