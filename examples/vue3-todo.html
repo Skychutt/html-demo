@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<!--
+  Vue 3 入门示例 — 待办列表（CDN 版）
+  演示：ref、v-model、v-for、@click、响应式更新
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vue 3 示例 - 待办列表</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: #f1f5f9;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    .tip {
+      max-width: 440px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .tip a { color: #42b883; }
+
+    #app {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.375rem;
+      color: #1e293b;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.875rem;
+      margin: 0 0 1.25rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+    }
+
+    .input-row input:focus {
+      outline: none;
+      border-color: #42b883;
+      box-shadow: 0 0 0 3px rgba(66,184,131,0.15);
+    }
+
+    .btn {
+      border: none;
+      padding: 0.625rem 1.125rem;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-add {
+      background: #42b883;
+      color: white;
+    }
+
+    .btn-add:hover { background: #33a06f; }
+
+    .stats {
+      font-size: 0.8125rem;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+    }
+
+    .todo-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .todo-item.done {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .todo-item.done .todo-text {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 0.9375rem;
+    }
+
+    .btn-del {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 0.25rem 0.625rem;
+      font-size: 0.8125rem;
+    }
+
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      padding: 1.5rem 0;
+    }
+
+    .explain {
+      max-width: 520px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+    }
+
+    .explain h3 {
+      margin: 0 0 0.75rem;
+      color: #42b883;
+      font-size: 0.9375rem;
+    }
+
+    .explain code {
+      background: #334155;
+      color: #86efac;
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <p class="tip">
+    Vue 3 待办列表示例 · 用 CDN 引入 Vue，无需构建工具<br>
+    <a href="../tutorial/vue3.html">← Vue 3 教程</a> ·
+    <a href="../index.html">返回首页</a>
+  </p>
+
+  <!-- Vue 挂载点：#app 内的 {{ }} 和 v-xxx 由 Vue 接管 -->
+  <div id="app">
+    <h1>📝 待办清单</h1>
+    <p class="subtitle">Vue 3 响应式 + v-model + v-for 演示</p>
+
+    <!-- v-model：输入框和 newTodo 双向绑定 -->
+    <div class="input-row">
+      <input
+        v-model="newTodo"
+        @keyup.enter="addTodo"
+        placeholder="输入待办，按 Enter 添加..."
+      >
+      <button class="btn btn-add" @click="addTodo">添加</button>
+    </div>
+
+    <!-- computed 派生数据 -->
+    <p class="stats">共 {{ todos.length }} 项，已完成 {{ doneCount }} 项</p>
+
+    <!-- v-if / v-for 列表渲染 -->
+    <ul class="todo-list" v-if="todos.length">
+      <li
+        v-for="todo in todos"
+        :key="todo.id"
+        class="todo-item"
+        :class="{ done: todo.done }"
+      >
+        <input type="checkbox" v-model="todo.done">
+        <span class="todo-text">{{ todo.text }}</span>
+        <button class="btn btn-del" @click="removeTodo(todo.id)">删除</button>
+      </li>
+    </ul>
+    <p class="empty" v-else>暂无待办，添加一条试试吧</p>
+  </div>
+
+  <div class="explain">
+    <h3>这个例子用了哪些 Vue 特性？</h3>
+    <ul>
+      <li><code>ref()</code> — 响应式数据 todos、newTodo</li>
+      <li><code>computed()</code> — 自动计算 doneCount</li>
+      <li><code>v-model</code> — 输入框和 checkbox 双向绑定</li>
+      <li><code>v-for</code> + <code>:key</code> — 渲染列表</li>
+      <li><code>@click</code> / <code>@keyup.enter</code> — 事件处理</li>
+      <li><code>:class</code> — 动态样式（完成态）</li>
+    </ul>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, computed } = Vue;
+
+    createApp({
+      setup() {
+        // 响应式数据
+        const newTodo = ref('');
+        const todos = ref([
+          { id: 1, text: '学习 Vue 3 模板语法', done: true },
+          { id: 2, text: '写一个待办列表', done: false },
+        ]);
+        let nextId = 3;
+
+        // 计算属性：已完成数量
+        const doneCount = computed(() => {
+          return todos.value.filter(t => t.done).length;
+        });
+
+        // 方法
+        function addTodo() {
+          const text = newTodo.value.trim();
+          if (!text) return;
+          todos.value.push({ id: nextId++, text, done: false });
+          newTodo.value = '';  // 清空输入框，界面自动更新
+        }
+
+        function removeTodo(id) {
+          todos.value = todos.value.filter(t => t.id !== id);
+        }
+
+        // 暴露给模板
+        return { newTodo, todos, doneCount, addTodo, removeTodo };
+      }
+    }).mount('#app');
+  </script>
+
+</body>
+</html>

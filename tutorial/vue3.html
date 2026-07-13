@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vue 3 基础教程 - 前端基础教程</title>
+  <meta name="description" content="从零开始学习 Vue 3：响应式、组件、组合式 API、模板语法与实战开发。">
+  <link rel="stylesheet" href="../css/tutorial.css">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <style>
+    .vue-demo-app {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      background: var(--color-surface);
+      margin: 1.25rem 0;
+    }
+    .vue-demo-app input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-size: 0.9375rem;
+      margin-right: 0.5rem;
+    }
+    .vue-demo-btn {
+      background: #42b883;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .vue-demo-btn:hover { background: #33a06f; }
+    .vue-demo-btn.danger { background: #e74c3c; }
+    .vue-demo-btn.danger:hover { background: #c0392b; }
+    .vue-tag {
+      display: inline-block;
+      background: #42b883;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="site-logo">📚 前端基础教程</a>
+      <button class="menu-toggle" aria-label="打开菜单">☰</button>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="html.html">HTML</a></li>
+          <li><a href="css.html">CSS</a></li>
+          <li><a href="javascript.html">JavaScript</a></li>
+          <li><a href="typescript.html">TypeScript</a></li>
+          <li><a href="vue3.html" class="active">Vue 3</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="sidebar-title">本章目录</p>
+      <ul class="toc">
+        <li><a href="#intro">什么是 Vue 3</a></li>
+        <li><a href="#vs-vanilla">与原生 JS 的区别</a></li>
+        <li><a href="#setup">环境搭建</a></li>
+        <li><a href="#first-app">第一个 Vue 应用</a></li>
+        <li><a href="#template">模板语法</a></li>
+        <li><a href="#reactivity">响应式数据</a></li>
+        <li><a href="#computed-watch">计算属性与侦听</a></li>
+        <li><a href="#render">条件与列表渲染</a></li>
+        <li><a href="#events-vmodel">事件与 v-model</a></li>
+        <li><a href="#components">组件基础</a></li>
+        <li><a href="#props-emits">Props 与 Emits</a></li>
+        <li><a href="#composition">组合式 API</a></li>
+        <li><a href="#lifecycle">生命周期</a></li>
+        <li><a href="#ecosystem">生态与工具链</a></li>
+        <li><a href="#best-practices">最佳实践</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">Vue 3 基础教程</h1>
+      <p class="page-desc"><span class="vue-tag">Vue 3</span> 是目前最流行的前端框架之一，帮你用<strong>组件化 + 响应式</strong>的方式构建用户界面。本教程假设你已掌握 HTML、CSS、JavaScript 基础，TypeScript 知识会有帮助但不是必须。</p>
+
+      <!-- 第1章 -->
+      <section id="intro">
+        <h2>1. 什么是 Vue 3？</h2>
+        <p>Vue（读音 /vjuː/，像 view）是一个用于构建用户界面的<strong>渐进式 JavaScript 框架</strong>。Vue 3 是 2020 年发布的最新 major 版本，性能更好，并引入了<strong>组合式 API（Composition API）</strong>。</p>
+
+        <h3>Vue 能帮你做什么？</h3>
+        <ul>
+          <li>把页面拆成<strong>可复用的组件</strong>（按钮、导航栏、卡片……）</li>
+          <li>数据变化时<strong>自动更新界面</strong>，不用手动操作 DOM</li>
+          <li>管理复杂应用的<strong>状态</strong>（用户信息、购物车、表单……）</li>
+          <li>配合 Vue Router、Pinia 构建<strong>单页应用（SPA）</strong></li>
+        </ul>
+
+        <h3>「渐进式」是什么意思？</h3>
+        <p>你可以只在一个页面里用 Vue 处理一小块交互，也可以用它构建整个大型应用——<strong>按需采用</strong>，没有「全有或全无」的压力。</p>
+
+        <div class="callout callout-tip">
+          <strong>💡 学习前提</strong>
+          请先掌握 JavaScript（尤其是 ES6+、DOM、模块化）。有 TypeScript 基础会更容易上手 Vue 3 + TS 项目。
+        </div>
+      </section>
+
+      <!-- 第2章 -->
+      <section id="vs-vanilla">
+        <h2>2. Vue 与原生 JavaScript 的区别</h2>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>对比项</th><th>原生 JS</th><th>Vue 3</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>更新界面</td>
+              <td>手动 <code>querySelector</code> + 改 textContent / classList</td>
+              <td>改数据，Vue 自动更新 DOM</td>
+            </tr>
+            <tr>
+              <td>代码组织</td>
+              <td>HTML / CSS / JS 分离，大项目难维护</td>
+              <td>组件化：每个组件包含模板 + 逻辑 + 样式</td>
+            </tr>
+            <tr>
+              <td>状态管理</td>
+              <td>自己维护变量，手动同步到 DOM</td>
+              <td>响应式系统，数据和视图自动同步</td>
+            </tr>
+            <tr>
+              <td>复用</td>
+              <td>复制粘贴或自己封装函数</td>
+              <td>组件直接复用，传 props 即可</td>
+            </tr>
+            <tr>
+              <td>学习曲线</td>
+              <td>低（基础部分）</td>
+              <td>需先会 JS，再学框架概念</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>同功能对比：计数器</h3>
+        <p><strong>原生 JS</strong> — 你要自己找元素、改文字：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">let</span> count = <span class="token-number">0</span>;
+<span class="token-keyword">const</span> display = document.querySelector(<span class="token-string">'#count'</span>);
+<span class="token-keyword">const</span> btn = document.querySelector(<span class="token-string">'#btn'</span>);
+
+btn.addEventListener(<span class="token-string">'click'</span>, () =&gt; {
+  count++;
+  display.textContent = count;  <span class="token-comment">// 手动同步 DOM</span>
+});</code></pre>
+        </div>
+
+        <p><strong>Vue 3</strong> — 只改数据，界面自动更新：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">Vue 3</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">const</span> { createApp, ref } = Vue;
+
+createApp({
+  setup() {
+    <span class="token-keyword">const</span> count = ref(<span class="token-number">0</span>);
+    <span class="token-keyword">const</span> increment = () =&gt; count.value++;
+    <span class="token-keyword">return</span> { count, increment };
+  }
+}).mount(<span class="token-string">'#app'</span>);
+
+<span class="token-comment">&lt;!-- 模板 --&gt;</span>
+<span class="token-comment">&lt;div id="app"&gt;</span>
+<span class="token-comment">  &lt;p&gt;{{ count }}&lt;/p&gt;</span>
+<span class="token-comment">  &lt;button @click="increment"&gt;+1&lt;/button&gt;</span>
+<span class="token-comment">&lt;/div&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第3章 -->
+      <section id="setup">
+        <h2>3. 环境搭建</h2>
+
+        <h3>方式一：CDN 快速体验（学习用）</h3>
+        <p>无需安装，在 HTML 里引入 Vue 即可，适合理解概念：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;script</span> <span class="token-attr">src</span>=<span class="token-string">"https://unpkg.com/vue@3/dist/vue.global.js"</span><span class="token-tag">&gt;&lt;/script&gt;</span></code></pre>
+        </div>
+
+        <h3>方式二：Vite 创建项目（正式开发推荐）</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">终端</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment"># 需要 Node.js 18+</span>
+npm create vue@latest my-vue-app
+
+<span class="token-comment"># 按提示选择：TypeScript? Router? Pinia? 等</span>
+cd my-vue-app
+npm install
+npm run dev     <span class="token-comment"># 启动开发服务器，通常 http://localhost:5173</span></code></pre>
+        </div>
+
+        <h3>项目结构（Vite + Vue 3）</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">目录</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code>my-vue-app/
+├── public/              <span class="token-comment"># 静态资源</span>
+├── src/
+│   ├── assets/          <span class="token-comment"># 图片、样式等</span>
+│   ├── components/      <span class="token-comment"># 可复用组件</span>
+│   ├── views/           <span class="token-comment"># 页面级组件（配合 Router）</span>
+│   ├── App.vue          <span class="token-comment"># 根组件</span>
+│   └── main.js          <span class="token-comment"># 入口文件</span>
+├── index.html           <span class="token-comment"># HTML 入口</span>
+├── package.json
+└── vite.config.js       <span class="token-comment"># Vite 配置</span></code></pre>
+        </div>
+
+        <h3>单文件组件（.vue）</h3>
+        <p>Vue 项目的核心单元，一个文件里包含模板、逻辑、样式：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HelloWorld.vue</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">&lt;!-- 模板：HTML 结构 --&gt;</span>
+<span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;div</span> <span class="token-attr">class</span>=<span class="token-string">"hello"</span><span class="token-tag">&gt;</span>
+    <span class="token-tag">&lt;h1&gt;</span>{{ msg }}<span class="token-tag">&lt;/h1&gt;</span>
+    <span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"count++"</span><span class="token-tag">&gt;</span>点击 {{ count }} 次<span class="token-tag">&lt;/button&gt;</span>
+  <span class="token-tag">&lt;/div&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span>
+
+<span class="token-comment">&lt;!-- 逻辑：JavaScript --&gt;</span>
+<span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+import { ref } from 'vue'
+const msg = ref('Hello Vue 3!')
+const count = ref(0)
+<span class="token-tag">&lt;/script&gt;</span>
+
+<span class="token-comment">&lt;!-- 样式：CSS（只作用于本组件） --&gt;</span>
+<span class="token-tag">&lt;style</span> <span class="token-attr">scoped</span><span class="token-tag">&gt;</span>
+.hello { text-align: center; padding: 2rem; }
+h1 { color: #42b883; }
+<span class="token-tag">&lt;/style&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第4章 -->
+      <section id="first-app">
+        <h2>4. 第一个 Vue 应用</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">HTML + Vue 3 CDN</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;!doctype html&gt;</span>
+<span class="token-tag">&lt;html</span> <span class="token-attr">lang</span>=<span class="token-string">"zh-CN"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;head&gt;</span>
+  <span class="token-tag">&lt;meta</span> <span class="token-attr">charset</span>=<span class="token-string">"utf-8"</span><span class="token-tag">&gt;</span>
+  <span class="token-tag">&lt;title&gt;</span>我的第一个 Vue 应用<span class="token-tag">&lt;/title&gt;</span>
+<span class="token-tag">&lt;/head&gt;</span>
+<span class="token-tag">&lt;body&gt;</span>
+
+  <span class="token-tag">&lt;div</span> <span class="token-attr">id</span>=<span class="token-string">"app"</span><span class="token-tag">&gt;</span>
+    <span class="token-tag">&lt;h1&gt;</span>{{ message }}<span class="token-tag">&lt;/h1&gt;</span>
+    <span class="token-tag">&lt;p&gt;</span>计数：{{ count }}<span class="token-tag">&lt;/p&gt;</span>
+    <span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"count++"</span><span class="token-tag">&gt;</span>+1<span class="token-tag">&lt;/button&gt;</span>
+  <span class="token-tag">&lt;/div&gt;</span>
+
+  <span class="token-tag">&lt;script</span> <span class="token-attr">src</span>=<span class="token-string">"https://unpkg.com/vue@3/dist/vue.global.js"</span><span class="token-tag">&gt;&lt;/script&gt;</span>
+  <span class="token-tag">&lt;script&gt;</span>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const message = ref('Hello Vue 3!')
+        const count = ref(0)
+        return { message, count }
+      }
+    }).mount('#app')
+  <span class="token-tag">&lt;/script&gt;</span>
+<span class="token-tag">&lt;/body&gt;</span>
+<span class="token-tag">&lt;/html&gt;</span></code></pre>
+        </div>
+
+        <p>三个关键步骤：</p>
+        <ol>
+          <li><code>createApp({ ... })</code> — 创建 Vue 应用实例</li>
+          <li><code>setup()</code> — 定义响应式数据和方法，<code>return</code> 出去供模板使用</li>
+          <li><code>.mount('#app')</code> — 挂载到 HTML 中 id 为 app 的元素上</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <strong>🧪 动手示例</strong>
+          我们准备了 Vue 3 待办列表示例（CDN 版）：<a href="../examples/vue3-todo.html" target="_blank">打开 Vue 3 待办示例 →</a>
+        </div>
+      </section>
+
+      <!-- 第5章 -->
+      <section id="template">
+        <h2>5. 模板语法</h2>
+        <p>Vue 模板是 HTML 的扩展，用特殊语法把数据和 DOM 绑定起来。</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>语法</th><th>名称</th><th>作用</th><th>示例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>{{ msg }}</code></td><td>文本插值</td><td>显示数据</td><td><code>{{ user.name }}</code></td></tr>
+            <tr><td><code>v-bind:href="url"</code></td><td>属性绑定</td><td>动态属性</td><td>简写 <code>:href="url"</code></td></tr>
+            <tr><td><code>v-if="show"</code></td><td>条件渲染</td><td>显示/隐藏元素</td><td>—</td></tr>
+            <tr><td><code>v-for="item in list"</code></td><td>列表渲染</td><td>循环渲染</td><td>—</td></tr>
+            <tr><td><code>@click="fn"</code></td><td>事件绑定</td><td>监听事件</td><td>等价 v-on:click</td></tr>
+            <tr><td><code>v-model="text"</code></td><td>双向绑定</td><td>表单 ↔ 数据同步</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">Vue Template</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;img</span> <span class="token-attr">:src</span>=<span class="token-string">"imageUrl"</span> <span class="token-attr">:alt</span>=<span class="token-string">"title"</span><span class="token-tag">&gt;</span>
+  <span class="token-tag">&lt;a</span> <span class="token-attr">:href</span>=<span class="token-string">"link"</span> <span class="token-attr">:class</span>=<span class="token-string">"{ active: isActive }"</span><span class="token-tag">&gt;</span>链接<span class="token-tag">&lt;/a&gt;</span>
+  <span class="token-tag">&lt;p&gt;</span>{{ count * 2 }}<span class="token-tag">&lt;/p&gt;</span>
+  <span class="token-tag">&lt;p</span> <span class="token-attr">v-html</span>=<span class="token-string">"rawHtml"</span><span class="token-tag">&gt;&lt;/p&gt;</span>  <span class="token-comment">&lt;!-- 渲染 HTML，慎用 --&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第6章 -->
+      <section id="reactivity">
+        <h2>6. 响应式数据</h2>
+        <p>Vue 3 的核心：<strong>数据变了，界面自动更新</strong>。组合式 API 中主要用 <code>ref</code> 和 <code>reactive</code>。</p>
+
+        <h3>ref — 包装单个值</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { ref } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-keyword">const</span> count = ref(<span class="token-number">0</span>)       <span class="token-comment">// 数字</span>
+<span class="token-keyword">const</span> name = ref(<span class="token-string">'小明'</span>)   <span class="token-comment">// 字符串</span>
+<span class="token-keyword">const</span> flag = ref(<span class="token-keyword">true</span>)     <span class="token-comment">// 布尔</span>
+
+<span class="token-comment">// JS 中读写要用 .value</span>
+count.value++            <span class="token-comment">// ✅</span>
+console.log(count.value) <span class="token-comment">// ✅</span>
+
+<span class="token-comment">// 模板中自动解包，不需要 .value</span>
+<span class="token-comment">// {{ count }} 即可</span></code></pre>
+        </div>
+
+        <h3>reactive — 包装对象</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { reactive } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-keyword">const</span> user = reactive({
+  name: <span class="token-string">'张三'</span>,
+  age: <span class="token-number">25</span>,
+})
+
+user.age++               <span class="token-comment">// 直接改属性，不需要 .value</span>
+user.city = <span class="token-string">'北京'</span>       <span class="token-comment">// 新增属性也是响应式的</span></code></pre>
+        </div>
+
+        <h3>ref vs reactive 怎么选？</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>场景</th><th>推荐</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>基本类型（string、number、boolean）</td><td><code>ref</code></td></tr>
+            <tr><td>需要整体替换的对象</td><td><code>ref</code></td></tr>
+            <tr><td>复杂对象、表单数据</td><td><code>reactive</code></td></tr>
+            <tr><td>不确定时</td><td>优先 <code>ref</code>（更通用）</td></tr>
+          </tbody>
+        </table>
+
+        <!-- 页面内 live demo -->
+        <div class="demo-box">
+          <div class="demo-label">Vue 3 实时演示 — 响应式计数器（本页加载 Vue CDN）</div>
+          <div class="demo-content">
+            <div id="vue-counter-demo" class="vue-demo-app">
+              <p style="font-size:1.5rem;font-weight:700;color:#42b883;margin:0 0 1rem;">{{ count }}</p>
+              <button class="vue-demo-btn" @click="count++">+1</button>
+              <button class="vue-demo-btn" @click="count--" style="margin-left:0.5rem;">-1</button>
+              <button class="vue-demo-btn danger" @click="count = 0" style="margin-left:0.5rem;">重置</button>
+              <p style="font-size:0.8125rem;color:#64748b;margin:0.75rem 0 0;">改 count 变量，界面自动更新，无需手动操作 DOM</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第7章 -->
+      <section id="computed-watch">
+        <h2>7. 计算属性与侦听器</h2>
+
+        <h3>computed — 派生数据</h3>
+        <p>基于现有数据<strong>计算</strong>出的值，有缓存，依赖不变不会重新计算：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { ref, computed } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-keyword">const</span> firstName = ref(<span class="token-string">'张'</span>)
+<span class="token-keyword">const</span> lastName = ref(<span class="token-string">'三'</span>)
+
+<span class="token-keyword">const</span> fullName = computed(() =&gt; {
+  <span class="token-keyword">return</span> firstName.value + lastName.value
+})
+
+<span class="token-comment">// 模板：{{ fullName }}  →  "张三"</span></code></pre>
+        </div>
+
+        <h3>watch — 监听变化</h3>
+        <p>数据变化时执行副作用（请求 API、存 localStorage 等）：</p>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { ref, watch } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-keyword">const</span> keyword = ref(<span class="token-string">''</span>)
+
+watch(keyword, (newVal, oldVal) =&gt; {
+  console.log(<span class="token-string">`搜索词从 "${oldVal}" 变为 "${newVal}"`</span>)
+  <span class="token-comment">// 可以在这里发 API 请求</span>
+})</code></pre>
+        </div>
+      </section>
+
+      <!-- 第8章 -->
+      <section id="render">
+        <h2>8. 条件与列表渲染</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">Vue Template</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">&lt;!-- 条件渲染 --&gt;</span>
+<span class="token-tag">&lt;p</span> <span class="token-attr">v-if</span>=<span class="token-string">"score &gt;= 60"</span><span class="token-tag">&gt;</span>及格了！<span class="token-tag">&lt;/p&gt;</span>
+<span class="token-tag">&lt;p</span> <span class="token-attr">v-else-if</span>=<span class="token-string">"score &gt;= 50"</span><span class="token-tag">&gt;</span>再努力一下<span class="token-tag">&lt;/p&gt;</span>
+<span class="token-tag">&lt;p</span> <span class="token-attr">v-else</span><span class="token-tag">&gt;</span>不及格<span class="token-tag">&lt;/p&gt;</span>
+
+<span class="token-comment">&lt;!-- v-show：只切换 display，适合频繁切换 --&gt;</span>
+<span class="token-tag">&lt;div</span> <span class="token-attr">v-show</span>=<span class="token-string">"visible"</span><span class="token-tag">&gt;</span>内容<span class="token-tag">&lt;/div&gt;</span>
+
+<span class="token-comment">&lt;!-- 列表渲染 — 必须加 :key --&gt;</span>
+<span class="token-tag">&lt;ul&gt;</span>
+  <span class="token-tag">&lt;li</span> <span class="token-attr">v-for</span>=<span class="token-string">"item in todos"</span> <span class="token-attr">:key</span>=<span class="token-string">"item.id"</span><span class="token-tag">&gt;</span>
+    {{ item.text }}
+  <span class="token-tag">&lt;/li&gt;</span>
+<span class="token-tag">&lt;/ul&gt;</span>
+
+<span class="token-comment">&lt;!-- 遍历对象 --&gt;</span>
+<span class="token-tag">&lt;li</span> <span class="token-attr">v-for</span>=<span class="token-string">"(value, key) in user"</span> <span class="token-attr">:key</span>=<span class="token-string">"key"</span><span class="token-tag">&gt;</span>
+  {{ key }}: {{ value }}
+<span class="token-tag">&lt;/li&gt;</span></code></pre>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>⚠️ v-if vs v-show</strong>
+          <code>v-if</code> 真正创建/销毁 DOM，适合不常切换；<code>v-show</code> 只改 CSS display，适合频繁显隐（如 Tab 切换）。
+        </div>
+      </section>
+
+      <!-- 第9章 -->
+      <section id="events-vmodel">
+        <h2>9. 事件处理与 v-model</h2>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">Vue Template</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-comment">&lt;!-- 事件 --&gt;</span>
+<span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"handleClick"</span><span class="token-tag">&gt;</span>点击<span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"count++"</span><span class="token-tag">&gt;</span>内联<span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"say('hello')"</span><span class="token-tag">&gt;</span>传参<span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;form</span> <span class="token-attr">@submit.prevent</span>=<span class="token-string">"onSubmit"</span><span class="token-tag">&gt;</span>...<span class="token-tag">&lt;/form&gt;</span>  <span class="token-comment">&lt;!-- .prevent 阻止默认行为 --&gt;</span>
+
+<span class="token-comment">&lt;!-- v-model 双向绑定 --&gt;</span>
+<span class="token-tag">&lt;input</span> <span class="token-attr">v-model</span>=<span class="token-string">"username"</span> <span class="token-attr">placeholder</span>=<span class="token-string">"用户名"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;textarea</span> <span class="token-attr">v-model</span>=<span class="token-string">"bio"</span><span class="token-tag">&gt;&lt;/textarea&gt;</span>
+<span class="token-tag">&lt;input</span> <span class="token-attr">type</span>=<span class="token-string">"checkbox"</span> <span class="token-attr">v-model</span>=<span class="token-string">"agreed"</span><span class="token-tag">&gt;</span>
+<span class="token-tag">&lt;select</span> <span class="token-attr">v-model</span>=<span class="token-string">"city"</span><span class="token-tag">&gt;</span>
+  <span class="token-tag">&lt;option</span> <span class="token-attr">value</span>=<span class="token-string">"bj"</span><span class="token-tag">&gt;</span>北京<span class="token-tag">&lt;/option&gt;</span>
+  <span class="token-tag">&lt;option</span> <span class="token-attr">value</span>=<span class="token-string">"sh"</span><span class="token-tag">&gt;</span>上海<span class="token-tag">&lt;/option&gt;</span>
+<span class="token-tag">&lt;/select&gt;</span>
+
+<span class="token-tag">&lt;p&gt;</span>你好，{{ username }}！<span class="token-tag">&lt;/p&gt;</span>  <span class="token-comment">&lt;!-- 输入框一改，这里自动变 --&gt;</span></code></pre>
+        </div>
+
+        <p><code>v-model</code> 本质上是 <code>:value</code> + <code>@input</code> 的语法糖，让你不用手动写 DOM 同步逻辑。</p>
+      </section>
+
+      <!-- 第10章 -->
+      <section id="components">
+        <h2>10. 组件基础</h2>
+        <p>组件是 Vue 的核心思想：把 UI 拆成独立、可复用的块。每个组件有自己的模板、逻辑和样式。</p>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">MyButton.vue</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;button</span> <span class="token-attr">class</span>=<span class="token-string">"my-btn"</span> <span class="token-attr">@click</span>=<span class="token-string">"handleClick"</span><span class="token-tag">&gt;</span>
+    {{ label }}
+  <span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span>
+
+<span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+const label = '点击我'
+function handleClick() {
+  alert('按钮被点击了！')
+}
+<span class="token-tag">&lt;/script&gt;</span>
+
+<span class="token-tag">&lt;style</span> <span class="token-attr">scoped</span><span class="token-tag">&gt;</span>
+.my-btn {
+  background: #42b883;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+<span class="token-tag">&lt;/style&gt;</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">App.vue 中使用</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;MyButton /&gt;</span>
+  <span class="token-tag">&lt;MyButton /&gt;</span>  <span class="token-comment">&lt;!-- 复用 --&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span>
+
+<span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+import MyButton from './components/MyButton.vue'
+<span class="token-tag">&lt;/script&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第11章 -->
+      <section id="props-emits">
+        <h2>11. Props 与 Emits</h2>
+        <p>组件之间通信的两个核心机制：<strong>父传子用 props，子传父用 emits</strong>。</p>
+
+        <h3>Props — 父组件向子组件传数据</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">UserCard.vue</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;div</span> <span class="token-attr">class</span>=<span class="token-string">"card"</span><span class="token-tag">&gt;</span>
+    <span class="token-tag">&lt;h3&gt;</span>{{ name }}<span class="token-tag">&lt;/h3&gt;</span>
+    <span class="token-tag">&lt;p&gt;</span>{{ age }} 岁<span class="token-tag">&lt;/p&gt;</span>
+  <span class="token-tag">&lt;/div&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span>
+
+<span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+<span class="token-comment">// 声明接收哪些 props</span>
+const props = defineProps({
+  name: String,
+  age: Number,
+})
+<span class="token-tag">&lt;/script&gt;</span>
+
+<span class="token-comment">&lt;!-- 父组件 --&gt;</span>
+<span class="token-comment">&lt;UserCard name="张三" :age="25" /&gt;</span></code></pre>
+        </div>
+
+        <h3>Emits — 子组件向父组件发事件</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">LikeButton.vue</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"emit('like', id)"</span><span class="token-tag">&gt;</span>点赞<span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span>
+
+<span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+defineProps({ id: Number })
+const emit = defineEmits(['like'])
+
+<span class="token-comment">// 父组件监听：</span>
+<span class="token-comment">// &lt;LikeButton :id="1" @like="handleLike" /&gt;</span>
+<span class="token-tag">&lt;/script&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第12章 -->
+      <section id="composition">
+        <h2>12. 组合式 API（Composition API）</h2>
+        <p>Vue 3 推荐的代码组织方式。用 <code>&lt;script setup&gt;</code> 语法，逻辑按<strong>功能</strong>组织，而不是按选项（data、methods……）分散。</p>
+
+        <h3>Options API vs Composition API</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th></th><th>Options API（Vue 2 风格）</th><th>Composition API（Vue 3 推荐）</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>写法</td><td><code>data()、methods、computed</code> 分开</td><td><code>setup()</code> 或 <code>&lt;script setup&gt;</code></td></tr>
+            <tr><td>逻辑复用</td><td>Mixins（容易冲突）</td><td>Composables 函数（清晰）</td></tr>
+            <tr><td>TypeScript</td><td>支持一般</td><td>原生友好</td></tr>
+            <tr><td>推荐度</td><td>老项目维护</td><td>新项目首选</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Composable — 逻辑复用函数</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">composables/useCounter.js</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { ref } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-comment">// 可复用的计数器逻辑</span>
+<span class="token-keyword">export</span> <span class="token-keyword">function</span> <span class="token-function">useCounter</span>(initial = <span class="token-number">0</span>) {
+  <span class="token-keyword">const</span> count = ref(initial)
+  <span class="token-keyword">const</span> increment = () =&gt; count.value++
+  <span class="token-keyword">const</span> decrement = () =&gt; count.value--
+  <span class="token-keyword">const</span> reset = () =&gt; { count.value = initial }
+  <span class="token-keyword">return</span> { count, increment, decrement, reset }
+}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">组件中使用</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-tag">&lt;script</span> <span class="token-attr">setup</span><span class="token-tag">&gt;</span>
+import { useCounter } from '@/composables/useCounter'
+const { count, increment, decrement, reset } = useCounter(10)
+<span class="token-tag">&lt;/script&gt;</span>
+
+<span class="token-tag">&lt;template&gt;</span>
+  <span class="token-tag">&lt;p&gt;</span>{{ count }}<span class="token-tag">&lt;/p&gt;</span>
+  <span class="token-tag">&lt;button</span> <span class="token-attr">@click</span>=<span class="token-string">"increment"</span><span class="token-tag">&gt;</span>+<span class="token-tag">&lt;/button&gt;</span>
+<span class="token-tag">&lt;/template&gt;</span></code></pre>
+        </div>
+      </section>
+
+      <!-- 第13章 -->
+      <section id="lifecycle">
+        <h2>13. 生命周期</h2>
+        <p>组件从创建到销毁会经历一系列阶段，可以在特定时机执行代码：</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>钩子</th><th>时机</th><th>常见用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>onMounted</code></td><td>组件挂载到 DOM 后</td><td>请求 API、初始化第三方库、聚焦输入框</td></tr>
+            <tr><td><code>onUpdated</code></td><td>数据变化导致 DOM 更新后</td><td>较少用，注意性能</td></tr>
+            <tr><td><code>onUnmounted</code></td><td>组件销毁前</td><td>清理定时器、取消订阅</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">JavaScript</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code><span class="token-keyword">import</span> { ref, onMounted, onUnmounted } <span class="token-keyword">from</span> <span class="token-string">'vue'</span>
+
+<span class="token-keyword">const</span> data = ref([])
+
+onMounted(<span class="token-keyword">async</span> () =&gt; {
+  <span class="token-keyword">const</span> res = <span class="token-keyword">await</span> fetch(<span class="token-string">'/api/users'</span>)
+  data.value = <span class="token-keyword">await</span> res.json()
+})
+
+<span class="token-keyword">let</span> timer
+onMounted(() =&gt; {
+  timer = setInterval(() =&gt; console.log(<span class="token-string">'tick'</span>), <span class="token-number">1000</span>)
+})
+onUnmounted(() =&gt; {
+  clearInterval(timer)  <span class="token-comment">// 组件销毁时清理，防止内存泄漏</span>
+})</code></pre>
+        </div>
+      </section>
+
+      <!-- 第14章 -->
+      <section id="ecosystem">
+        <h2>14. Vue 生态与工具链</h2>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>工具</th><th>作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Vite</strong></td><td>构建工具，极快的开发服务器和打包</td></tr>
+            <tr><td><strong>Vue Router</strong></td><td>官方路由，实现多页面 SPA（/home、/about……）</td></tr>
+            <tr><td><strong>Pinia</strong></td><td>官方状态管理，跨组件共享数据（用户信息、购物车）</td></tr>
+            <tr><td><strong>Vue DevTools</strong></td><td>浏览器插件，调试组件树和响应式数据</td></tr>
+            <tr><td><strong>Element Plus / Naive UI</strong></td><td>UI 组件库，快速搭建界面</td></tr>
+          </tbody>
+        </table>
+
+        <h3>创建完整项目的命令</h3>
+        <div class="code-block">
+          <div class="code-block-header"><span class="lang">终端</span><button class="copy-btn" type="button">复制</button></div>
+          <pre><code>npm create vue@latest
+<span class="token-comment"># ✔ Add Vue Router?        → Yes（需要多页面时）</span>
+<span class="token-comment"># ✔ Add Pinia?             → Yes（需要全局状态时）</span>
+<span class="token-comment"># ✔ Add TypeScript?        → 推荐 Yes</span>
+<span class="token-comment"># ✔ Add ESLint?            → 推荐 Yes</span>
+
+cd &lt;project-name&gt;
+npm install
+npm run dev</code></pre>
+        </div>
+      </section>
+
+      <!-- 第15章 -->
+      <section id="best-practices">
+        <h2>15. 最佳实践</h2>
+
+        <h3>✅ 推荐</h3>
+        <ul>
+          <li>新项目用 <code>&lt;script setup&gt;</code> + 组合式 API</li>
+          <li>组件名用 PascalCase（<code>UserCard.vue</code>）</li>
+          <li><code>v-for</code> 始终加 <code>:key</code></li>
+          <li>复杂逻辑抽到 composable 函数</li>
+          <li>样式用 <code>scoped</code> 避免污染全局</li>
+          <li>安装 Vue DevTools 浏览器插件</li>
+        </ul>
+
+        <h3>❌ 避免</h3>
+        <ul>
+          <li>没学 JS 就直接学 Vue</li>
+          <li>在模板里写复杂逻辑（用 computed 代替）</li>
+          <li>直接修改 props（应 emit 事件让父组件改）</li>
+          <li>滥用 <code>v-html</code>（XSS 风险）</li>
+        </ul>
+
+        <h3>学习路线</h3>
+        <ol>
+          <li>HTML / CSS / JavaScript 基础</li>
+          <li>用 CDN 写几个小 demo（计数器、待办列表）</li>
+          <li><code>npm create vue@latest</code> 创建项目</li>
+          <li>学组件、props、emits、v-model</li>
+          <li>学 Vue Router + Pinia</li>
+          <li>做一个完整小项目（博客、商城、管理后台）</li>
+        </ol>
+
+        <div class="callout callout-note">
+          <strong>🎉 恭喜完成全部教程！</strong>
+          你已经掌握了从前端基础到 Vue 3 框架的完整入门路径。推荐资源：
+          <ul style="margin:0.5rem 0 0;padding-left:1.25rem;">
+            <li><a href="https://cn.vuejs.org/" target="_blank" rel="noopener">Vue 3 中文官方文档</a></li>
+            <li><a href="../examples/vue3-todo.html" target="_blank">本教程 Vue 3 待办示例</a></li>
+            <li><a href="../examples/like-card.html" target="_blank">原生 JS 三合一示例（对比学习）</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="chapter-nav">
+        <a href="typescript.html">
+          <span class="nav-label">← 上一章</span>
+          <span class="nav-title">TypeScript 基础教程</span>
+        </a>
+        <a href="../index.html" class="next">
+          <span class="nav-label">完成 →</span>
+          <span class="nav-title">返回首页</span>
+        </a>
+      </nav>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>前端基础教程 · Vue 3 章节</p>
+  </footer>
+
+  <script src="../js/tutorial.js"></script>
+  <!-- 页面内 Vue 计数器 demo -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref } = Vue;
+    createApp({
+      setup() {
+        const count = ref(0);
+        return { count };
+      }
+    }).mount('#vue-counter-demo');
+  </script>
+</body>
+
+</html>

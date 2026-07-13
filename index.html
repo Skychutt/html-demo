@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>前端基础教程 - HTML / CSS / JavaScript / TypeScript 入门</title>
-  <meta name="description" content="从零开始学习 HTML、CSS、JavaScript 和 TypeScript 的完整基础语法教程，适合编程新手入门。">
+  <title>前端基础教程 - HTML / CSS / JavaScript / TypeScript / Vue 3 入门</title>
+  <meta name="description" content="从零开始学习 HTML、CSS、JavaScript、TypeScript 和 Vue 3 的完整基础语法教程，适合编程新手入门。">
   <link rel="stylesheet" href="css/tutorial.css">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
@@ -23,6 +23,7 @@
           <li><a href="tutorial/css.html">CSS</a></li>
           <li><a href="tutorial/javascript.html">JavaScript</a></li>
           <li><a href="tutorial/typescript.html">TypeScript</a></li>
+          <li><a href="tutorial/vue3.html">Vue 3</a></li>
         </ul>
       </nav>
     </div>
@@ -31,7 +32,7 @@
   <main>
     <section class="hero">
       <h1>前端开发零基础入门</h1>
-      <p>一套完整、详细、面向新手的 HTML、CSS、JavaScript 和 TypeScript 基础语法教程。<br>跟着学，你就能做出自己的第一个网页。</p>
+      <p>一套完整、详细、面向新手的 HTML、CSS、JavaScript、TypeScript 和 Vue 3 基础教程。<br>跟着学，你就能做出自己的第一个网页。</p>
     </section>
 
     <div class="card-grid">
@@ -62,21 +63,32 @@
         <p>在 JS 基础上学习静态类型：类型注解、接口、泛型、与 JavaScript 的区别及工程化实践。</p>
         <span class="card-meta">15 个章节 · 建议 4-6 小时</span>
       </a>
+
+      <a href="tutorial/vue3.html" class="course-card">
+        <div class="card-icon">💚</div>
+        <h2>Vue 3 基础</h2>
+        <p>学习主流前端框架：响应式数据、模板语法、组件化、组合式 API、Props/Emits 与生态工具链。</p>
+        <span class="card-meta">15 个章节 · 建议 5-7 小时</span>
+      </a>
     </div>
 
     <section class="learning-path">
       <h2>动手示例：三合一入门</h2>
-      <p style="text-align:center;color:#64748b;max-width:600px;margin:0 auto 1.25rem;">
-        学完全部教程前，也可以先看这个例子 —— 一个文件里包含 HTML、CSS、JavaScript，实现点赞功能。
+      <p style="text-align:center;color:#64748b;max-width:640px;margin:0 auto 1.25rem;">
+        学完全部教程前，也可以先看这些动手示例 —— 从原生 JS 到 Vue 3，由浅入深。
       </p>
-      <div style="text-align:center;margin-bottom:3rem;">
-        <a href="examples/like-card.html" class="course-card" style="display:inline-flex;max-width:400px;text-align:left;">
-          <div>
-            <div class="card-icon" style="font-size:2rem;">🧪</div>
-            <h2 style="font-size:1.125rem;">点赞卡片示例</h2>
-            <p style="font-size:0.875rem;margin-bottom:0.75rem;">HTML 搭结构 + CSS 做样式 + JS 写逻辑，源码带详细中文注释，用浏览器直接打开就能玩。</p>
-            <span class="card-meta">单文件 · 点击体验 →</span>
-          </div>
+      <div class="card-grid" style="padding-bottom:2rem;">
+        <a href="examples/like-card.html" class="course-card">
+          <div class="card-icon">🧪</div>
+          <h2>点赞卡片（原生 JS）</h2>
+          <p>一个 HTML 文件里同时写 CSS 和 JS，实现点赞功能，源码带详细中文注释。</p>
+          <span class="card-meta">单文件 · HTML + CSS + JS</span>
+        </a>
+        <a href="examples/vue3-todo.html" class="course-card">
+          <div class="card-icon">💚</div>
+          <h2>待办列表（Vue 3）</h2>
+          <p>用 Vue 3 CDN 实现待办清单：v-model、v-for、computed、响应式数据。</p>
+          <span class="card-meta">单文件 · Vue 3 CDN</span>
         </a>
       </div>
     </section>
@@ -88,6 +100,7 @@
         <li><strong>CSS 基础</strong> — 给页面添加颜色、布局和美观的样式</li>
         <li><strong>JavaScript 基础</strong> — 让页面"活"起来，响应用户的点击和操作</li>
         <li><strong>TypeScript 基础</strong> — 给 JS 加上类型系统，为大型项目和框架开发打基础</li>
+        <li><strong>Vue 3 基础</strong> — 用组件化框架高效构建交互式前端应用</li>
         <li><strong>动手练习</strong> — 尝试做一个简单的个人主页或待办事项页面</li>
       </ol>
     </section>
